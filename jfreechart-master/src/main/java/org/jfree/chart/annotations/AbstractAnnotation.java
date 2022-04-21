@@ -56,14 +56,10 @@ import org.jfree.chart.event.AnnotationChangeListener;
 public abstract class AbstractAnnotation implements Annotation, Cloneable,
         Serializable {
 
-    /** Storage for registered change listeners. */
-    private transient EventListenerList listenerList;
+    private AbstractAnnotationProduct abstractAnnotationProduct = new AbstractAnnotationProduct();
 
-    /**
-     * A flag that indicates whether listeners should be notified
-     * about changes of the annotation.
-     */
-    private boolean notify = true;
+	/** Storage for registered change listeners. */
+    private transient EventListenerList listenerList;
 
     /**
      * Constructs an annotation.
@@ -121,9 +117,7 @@ public abstract class AbstractAnnotation implements Annotation, Cloneable,
      * @see #addChangeListener(AnnotationChangeListener)
      */
     protected void fireAnnotationChanged() {
-        if (notify) {
-            notifyListeners(new AnnotationChangeEvent(this, this));
-        }
+        abstractAnnotationProduct.fireAnnotationChanged(this);
     }
 
     /**
@@ -156,7 +150,7 @@ public abstract class AbstractAnnotation implements Annotation, Cloneable,
      * @see #setNotify(boolean)
      */
     public boolean getNotify(){
-        return this.notify;
+        return this.abstractAnnotationProduct.getNotify();
     }
 
     /**
@@ -168,10 +162,7 @@ public abstract class AbstractAnnotation implements Annotation, Cloneable,
      * @see #getNotify()
      */
     public void setNotify(boolean flag){
-        this.notify = flag;
-        if (notify) {
-            fireAnnotationChanged();
-        }
+        abstractAnnotationProduct.setNotify(flag, this);
     }
 
     /**
@@ -187,6 +178,7 @@ public abstract class AbstractAnnotation implements Annotation, Cloneable,
     @Override
     public Object clone() throws CloneNotSupportedException {
         AbstractAnnotation clone = (AbstractAnnotation) super.clone();
+		clone.abstractAnnotationProduct = (AbstractAnnotationProduct) this.abstractAnnotationProduct.clone();
         clone.listenerList = new EventListenerList();
         return clone;
     }

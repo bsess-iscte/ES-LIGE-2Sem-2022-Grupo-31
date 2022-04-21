@@ -89,7 +89,11 @@ import org.jfree.chart.internal.SerialUtils;
  */
 public abstract class Axis implements ChartElement, Cloneable, Serializable {
 
-    /** For serialization. */
+    private transient AxisProduct2 axisProduct2 = new AxisProduct2();
+
+	private AxisProduct axisProduct = new AxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 7719289504573298271L;
 
     /** The default axis visibility ({@code true}). */
@@ -210,22 +214,6 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      */
     private float tickMarkOutsideLength;
 
-    /**
-     * A flag that indicates whether or not minor tick marks are visible for the
-     * axis.
-     */
-    private boolean minorTickMarksVisible;
-
-    /**
-     * The length of the minor tick mark inside the data area (zero permitted).
-     */
-    private float minorTickMarkInsideLength;
-
-    /**
-     * The length of the minor tick mark outside the data area (zero permitted).
-     */
-    private float minorTickMarkOutsideLength;
-
     /** The stroke used to draw tick marks. */
     private transient Stroke tickMarkStroke;
 
@@ -240,9 +228,6 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * {@code null}).
      */
     private transient Plot plot;
-
-    /** Storage for registered listeners. */
-    private transient EventListenerList listenerList;
 
     /**
      * Constructs an axis with the specific label and default values for other
@@ -275,13 +260,13 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
         this.tickMarkInsideLength = DEFAULT_TICK_MARK_INSIDE_LENGTH;
         this.tickMarkOutsideLength = DEFAULT_TICK_MARK_OUTSIDE_LENGTH;
 
-        this.minorTickMarksVisible = false;
-        this.minorTickMarkInsideLength = 0.0f;
-        this.minorTickMarkOutsideLength = 2.0f;
+        axisProduct.setMinorTickMarksVisible2(false);
+        axisProduct.setMinorTickMarkInsideLength2(0.0f);
+        axisProduct.setMinorTickMarkOutsideLength2(2.0f);
 
         this.plot = null;
 
-        this.listenerList = new EventListenerList();
+        axisProduct2.setListenerList(new EventListenerList());
     }
 
     /**
@@ -658,7 +643,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #setMinorTickMarksVisible(boolean)
      */
     public boolean isMinorTickMarksVisible() {
-        return this.minorTickMarksVisible;
+        return this.axisProduct.getMinorTickMarksVisible();
     }
 
     /**
@@ -671,10 +656,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #isMinorTickMarksVisible()
      */
     public void setMinorTickMarksVisible(boolean flag) {
-        if (flag != this.minorTickMarksVisible) {
-            this.minorTickMarksVisible = flag;
-            fireChangeEvent();
-        }
+        axisProduct.setMinorTickMarksVisible(flag, this);
     }
 
     /**
@@ -895,7 +877,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #setMinorTickMarkInsideLength(float)
      */
     public float getMinorTickMarkInsideLength() {
-        return this.minorTickMarkInsideLength;
+        return this.axisProduct.getMinorTickMarkInsideLength();
     }
 
     /**
@@ -907,8 +889,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #getMinorTickMarkInsideLength()
      */
     public void setMinorTickMarkInsideLength(float length) {
-        this.minorTickMarkInsideLength = length;
-        fireChangeEvent();
+        axisProduct.setMinorTickMarkInsideLength(length, this);
     }
 
     /**
@@ -920,7 +901,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #setMinorTickMarkOutsideLength(float)
      */
     public float getMinorTickMarkOutsideLength() {
-        return this.minorTickMarkOutsideLength;
+        return this.axisProduct.getMinorTickMarkOutsideLength();
     }
 
     /**
@@ -932,8 +913,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #getMinorTickMarkInsideLength()
      */
     public void setMinorTickMarkOutsideLength(float length) {
-        this.minorTickMarkOutsideLength = length;
-        fireChangeEvent();
+        axisProduct.setMinorTickMarkOutsideLength(length, this);
     }
 
     /**
@@ -1114,7 +1094,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #removeChangeListener(AxisChangeListener)
      */
     public void addChangeListener(AxisChangeListener listener) {
-        this.listenerList.add(AxisChangeListener.class, listener);
+        axisProduct2.addChangeListener(listener);
     }
 
     /**
@@ -1125,7 +1105,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @see #addChangeListener(AxisChangeListener)
      */
     public void removeChangeListener(AxisChangeListener listener) {
-        this.listenerList.remove(AxisChangeListener.class, listener);
+        axisProduct2.removeChangeListener(listener);
     }
 
     /**
@@ -1138,8 +1118,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @return A boolean.
      */
     public boolean hasListener(EventListener listener) {
-        List list = Arrays.asList(this.listenerList.getListenerList());
-        return list.contains(listener);
+        return axisProduct2.hasListener(listener);
     }
 
     /**
@@ -1149,19 +1128,14 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      * @param event  information about the change to the axis.
      */
     protected void notifyListeners(AxisChangeEvent event) {
-        Object[] listeners = this.listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == AxisChangeListener.class) {
-                ((AxisChangeListener) listeners[i + 1]).axisChanged(event);
-            }
-        }
+        axisProduct2.notifyListeners(event);
     }
 
     /**
      * Sends an {@link AxisChangeEvent} to all registered listeners.
      */
     protected void fireChangeEvent() {
-        notifyListeners(new AxisChangeEvent(this));
+        axisProduct2.notifyListeners(new AxisChangeEvent(this));
     }
 
     /**
@@ -1527,9 +1501,11 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Axis clone = (Axis) super.clone();
+		clone.axisProduct2 = (AxisProduct2) this.axisProduct2.clone();
+		clone.axisProduct = (AxisProduct) this.axisProduct.clone();
         // It's up to the plot which clones up to restore the correct references
         clone.plot = null;
-        clone.listenerList = new EventListenerList();
+        clone.axisProduct2.setListenerList(new EventListenerList());
         return clone;
     }
 
@@ -1610,14 +1586,14 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
         if (!Objects.equals(this.tickMarkStroke, that.tickMarkStroke)) {
             return false;
         }
-        if (this.minorTickMarksVisible != that.minorTickMarksVisible) {
+        if (this.axisProduct.getMinorTickMarksVisible() != that.axisProduct.getMinorTickMarksVisible()) {
             return false;
         }
-        if (this.minorTickMarkInsideLength != that.minorTickMarkInsideLength) {
+        if (this.axisProduct.getMinorTickMarkInsideLength() != that.axisProduct.getMinorTickMarkInsideLength()) {
             return false;
         }
-        if (this.minorTickMarkOutsideLength
-                != that.minorTickMarkOutsideLength) {
+        if (this.axisProduct.getMinorTickMarkOutsideLength()
+                != that.axisProduct.getMinorTickMarkOutsideLength()) {
             return false;
         }
         if (this.fixedDimension != that.fixedDimension) {
@@ -1649,6 +1625,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
+		stream.writeObject(this.axisProduct2);
         SerialUtils.writeAttributedString(this.attributedLabel, stream);
         SerialUtils.writePaint(this.labelPaint, stream);
         SerialUtils.writePaint(this.tickLabelPaint, stream);
@@ -1669,6 +1646,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
     private void readObject(ObjectInputStream stream)
         throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
+		this.axisProduct2 = (AxisProduct2) stream.readObject();
         this.attributedLabel = SerialUtils.readAttributedString(stream);
         this.labelPaint = SerialUtils.readPaint(stream);
         this.tickLabelPaint = SerialUtils.readPaint(stream);
@@ -1676,7 +1654,7 @@ public abstract class Axis implements ChartElement, Cloneable, Serializable {
         this.axisLinePaint = SerialUtils.readPaint(stream);
         this.tickMarkStroke = SerialUtils.readStroke(stream);
         this.tickMarkPaint = SerialUtils.readPaint(stream);
-        this.listenerList = new EventListenerList();
+        axisProduct2.setListenerList(new EventListenerList());
     }
 
 }
