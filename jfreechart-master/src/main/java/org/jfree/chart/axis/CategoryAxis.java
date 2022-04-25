@@ -1087,12 +1087,12 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                 g2.setFont(getTickLabelFont(category));
                 TextBlock label = createLabel(category, l * r, edge, g2);
                 if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-                    max = Math.max(max, calculateCategoryLabelHeight(label,
-                            position, getTickLabelInsets(), g2));
+                    max = Math.max(max, getTickLabelInsets().calculateCategoryLabelHeight(label,
+                            position, g2));
                 } else if (edge == RectangleEdge.LEFT
                         || edge == RectangleEdge.RIGHT) {
-                    max = Math.max(max, calculateCategoryLabelWidth(label,
-                            position, getTickLabelInsets(), g2));
+                    max = Math.max(max, getTickLabelInsets().calculateCategoryLabelWidth(label,
+                            position, g2));
                 }
                 Tick tick = new CategoryTick(category, label,
                         position.getLabelAnchor(),
@@ -1188,50 +1188,6 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                 getTickLabelFont(category), getTickLabelPaint(category), width,
                 this.maximumCategoryLabelLines, new G2TextMeasurer(g2));
         return label;
-    }
-
-    /**
-     * Calculates the width of a category label when rendered.
-     *
-     * @param label  the text block ({@code null} not permitted).
-     * @param position  the position.
-     * @param insets  the label insets.
-     * @param g2  the graphics device.
-     *
-     * @return The width.
-     */
-    protected double calculateCategoryLabelWidth(TextBlock label, 
-            CategoryLabelPosition position, RectangleInsets insets, Graphics2D g2) {
-        Size2D size = label.calculateDimensions(g2);
-        Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-                size.getHeight());
-        Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-                0.0f, 0.0f);
-        double w = rotatedBox.getBounds2D().getWidth() + insets.getLeft()
-                + insets.getRight();
-        return w;
-    }
-
-    /**
-     * Calculates the height of a category label when rendered.
-     *
-     * @param block  the text block ({@code null} not permitted).
-     * @param position  the label position ({@code null} not permitted).
-     * @param insets  the label insets ({@code null} not permitted).
-     * @param g2  the graphics device ({@code null} not permitted).
-     *
-     * @return The height.
-     */
-    protected double calculateCategoryLabelHeight(TextBlock block,
-            CategoryLabelPosition position, RectangleInsets insets, Graphics2D g2) {
-        Size2D size = block.calculateDimensions(g2);
-        Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-                size.getHeight());
-        Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-                0.0f, 0.0f);
-        double h = rotatedBox.getBounds2D().getHeight()
-                   + insets.getTop() + insets.getBottom();
-        return h;
     }
 
     /**

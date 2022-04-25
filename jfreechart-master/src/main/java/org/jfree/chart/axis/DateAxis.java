@@ -908,8 +908,8 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
             calendar.set(years, value, 1, 0, 0, 0);
             Month month = new Month(calendar.getTime(), this.timeZone,
                     this.locale);
-            Date standardDate = calculateDateForPosition(
-                    month, this.tickMarkPosition);
+            Date standardDate = month.calculateDateForPosition(
+                    this.tickMarkPosition);
             long millis = standardDate.getTime();
             if (millis >= date.getTime()) {
                 for (int i = 0; i < count; i++) {
@@ -918,8 +918,8 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
                 // need to peg the month in case the time zone isn't the
                 // default - see bug 2078057
                 month.peg(Calendar.getInstance(this.timeZone));
-                standardDate = calculateDateForPosition(
-                        month, this.tickMarkPosition);
+                standardDate = month.calculateDateForPosition(
+                        this.tickMarkPosition);
             }
             return standardDate;
         }
@@ -946,32 +946,6 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
             return d3;
         }
         return null;
-    }
-
-    /**
-     * Returns a {@link java.util.Date} corresponding to the specified position
-     * within a {@link RegularTimePeriod}.
-     *
-     * @param period  the period.
-     * @param position  the position ({@code null} not permitted).
-     *
-     * @return A date.
-     */
-    private Date calculateDateForPosition(RegularTimePeriod period,
-            DateTickMarkPosition position) {
-        Args.nullNotPermitted(period, "period");
-        Date result = null;
-        if (position == DateTickMarkPosition.START) {
-            result = new Date(period.getFirstMillisecond());
-        }
-        else if (position == DateTickMarkPosition.MIDDLE) {
-            result = new Date(period.getMiddleMillisecond());
-        }
-        else if (position == DateTickMarkPosition.END) {
-            result = new Date(period.getLastMillisecond());
-        }
-        return result;
-
     }
 
     /**
@@ -1429,11 +1403,9 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
             DateTickMarkPosition position) {
         Date result = time;
         if (unit.getUnitType().equals(DateTickUnitType.MONTH)) {
-            result = calculateDateForPosition(new Month(time, this.timeZone,
-                    this.locale), position);
+            result = new Month(time, this.timeZone, this.locale).calculateDateForPosition(position);
         } else if (unit.getUnitType().equals(DateTickUnitType.YEAR)) {
-            result = calculateDateForPosition(new Year(time, this.timeZone,
-                    this.locale), position);
+            result = new Year(time, this.timeZone, this.locale).calculateDateForPosition(position);
         }
         return result;
     }

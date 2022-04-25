@@ -274,4 +274,17 @@ public class BlockContainer extends AbstractBlock
         return clone;
     }
 
+	/**
+	 * Arranges the blocks without any constraints.  This puts all blocks into a single row.
+	 * @param g2   the graphics device.
+	 * @return  The size after the arrangement.
+	 */
+	public Size2D arrangeNN(Graphics2D g2) {
+		List<Block> blocks = getBlocks();
+		Block b = blocks.get(0);
+		Size2D s = b.arrange(g2, RectangleConstraint.NONE);
+		b.setBounds(new Rectangle2D.Double(0.0, 0.0, s.width, s.height));
+		return new Size2D(s.width, s.height);
+	}
+
 }

@@ -36,6 +36,9 @@
 
 package org.jfree.chart.block;
 
+import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
+import java.util.List;
 import org.jfree.chart.internal.Args;
 import org.jfree.data.Range;
 
@@ -346,5 +349,21 @@ public class RectangleConstraint {
         }
         return result;
     }
+
+	/**
+	 * Arranges the blocks in the container with a fixed width and no height constraint.
+	 * @param container   the container.
+	 * @param g2   the graphics device.
+	 * @return  The size.
+	 */
+	public Size2D arrangeFN(BlockContainer container, Graphics2D g2) {
+		List<Block> blocks = container.getBlocks();
+		Block b = blocks.get(0);
+		Size2D s = b.arrange(g2, RectangleConstraint.NONE);
+		double width = getWidth();
+		Rectangle2D bounds = new Rectangle2D.Double((width - s.width) / 2.0, 0.0, s.width, s.height);
+		b.setBounds(bounds);
+		return new Size2D((width - s.width) / 2.0, s.height);
+	}
 
 }
