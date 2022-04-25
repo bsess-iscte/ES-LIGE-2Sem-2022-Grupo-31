@@ -1086,12 +1086,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
         else if (title instanceof PaintScaleLegend) {
-            PaintScaleLegend psl = (PaintScaleLegend) title;
-            psl.setBackgroundPaint(this.legendBackgroundPaint);
-            ValueAxis axis = psl.getAxis();
-            if (axis != null) {
-                applyToValueAxis(axis);
-            }
+            ValueAxis axis = applyToPaintScaleLegend(title);
         }
         else if (title instanceof CompositeTitle) {
             CompositeTitle ct = (CompositeTitle) title;
@@ -1103,6 +1098,16 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
+
+	private ValueAxis applyToPaintScaleLegend(Title title) {
+		PaintScaleLegend psl = (PaintScaleLegend) title;
+		psl.setBackgroundPaint(this.legendBackgroundPaint);
+		ValueAxis axis = psl.getAxis();
+		if (axis != null) {
+			applyToValueAxis(axis);
+		}
+		return axis;
+	}
 
     /**
      * Applies the attributes of this theme to the specified container.
@@ -1138,15 +1143,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      */
     protected void applyToPlot(Plot plot) {
         Args.nullNotPermitted(plot, "plot");
-        if (plot.getDrawingSupplier() != null) {
-            plot.setDrawingSupplier(getDrawingSupplier());
-        }
-        if (plot.getBackgroundPaint() != null) {
-            plot.setBackgroundPaint(this.plotBackgroundPaint);
-        }
-        plot.setOutlinePaint(this.plotOutlinePaint);
-
-        // now handle specific plot types (and yes, I know this is some
+        plotDrawSetter(plot);
+		// now handle specific plot types (and yes, I know this is some
         // really ugly code that has to be manually updated any time a new
         // plot type is added - I should have written something much cooler,
         // but I didn't and neither did anyone else).
@@ -1178,6 +1176,16 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             applyToPolarPlot((PolarPlot) plot);
         }
     }
+
+	private void plotDrawSetter(Plot plot) {
+		if (plot.getDrawingSupplier() != null) {
+			plot.setDrawingSupplier(getDrawingSupplier());
+		}
+		if (plot.getBackgroundPaint() != null) {
+			plot.setBackgroundPaint(this.plotBackgroundPaint);
+		}
+		plot.setOutlinePaint(this.plotOutlinePaint);
+	}
 
     /**
      * Applies the attributes of this theme to a {@link PiePlot} instance.
@@ -1220,13 +1228,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      * @param plot  the plot ({@code null} not permitted).
      */
     protected void applyToCategoryPlot(CategoryPlot plot) {
-        plot.setAxisOffset(this.axisOffset);
-        plot.setDomainGridlinePaint(this.domainGridlinePaint);
-        plot.setRangeGridlinePaint(this.rangeGridlinePaint);
-        plot.setRangeZeroBaselinePaint(this.baselinePaint);
-        plot.setShadowGenerator(this.shadowGenerator);
-
-        // process all domain axes
+        plotSetter(plot);
+		// process all domain axes
         int domainAxisCount = plot.getDomainAxisCount();
         for (int i = 0; i < domainAxisCount; i++) {
             CategoryAxis axis = plot.getDomainAxis(i);
@@ -1270,6 +1273,14 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
+
+	private void plotSetter(CategoryPlot plot) {
+		plot.setAxisOffset(this.axisOffset);
+		plot.setDomainGridlinePaint(this.domainGridlinePaint);
+		plot.setRangeGridlinePaint(this.rangeGridlinePaint);
+		plot.setRangeZeroBaselinePaint(this.baselinePaint);
+		plot.setShadowGenerator(this.shadowGenerator);
+	}
 
     /**
      * Applies the attributes of this theme to a {@link XYPlot}.
