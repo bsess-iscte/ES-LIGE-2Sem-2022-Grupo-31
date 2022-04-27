@@ -49,7 +49,7 @@ import org.jfree.chart.text.TextAnchor;
 public class LogTick extends ValueTick {
     
     /** The attributed string for the tick label. */
-    AttributedString attributedLabel;
+    private AttributedString attributedLabel;
     
     /**
      * Creates a new instance.

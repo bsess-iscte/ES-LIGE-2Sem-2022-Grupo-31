@@ -85,7 +85,9 @@ import org.jfree.data.time.Year;
 public class PeriodAxis extends ValueAxis
         implements Cloneable, PublicCloneable, Serializable {
 
-    /** For serialization. */
+    private transient PeriodAxisProduct periodAxisProduct = new PeriodAxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 8353295532075872069L;
 
     /** The first time period in the overall range. */
@@ -140,12 +142,6 @@ public class PeriodAxis extends ValueAxis
 
     /** The length of the tick mark outside the data area (zero permitted). */
     private float minorTickMarkOutsideLength = 2.0f;
-
-    /** The stroke used to draw tick marks. */
-    private transient Stroke minorTickMarkStroke = new BasicStroke(0.5f);
-
-    /** The paint used to draw tick marks. */
-    private transient Paint minorTickMarkPaint = Color.BLACK;
 
     /** Info for each labeling band. */
     private PeriodAxisLabelInfo[] labelInfo;
@@ -387,7 +383,7 @@ public class PeriodAxis extends ValueAxis
      * @return A stroke (never {@code null}).
      */
     public Stroke getMinorTickMarkStroke() {
-        return this.minorTickMarkStroke;
+        return this.periodAxisProduct.getMinorTickMarkStroke();
     }
 
     /**
@@ -398,9 +394,7 @@ public class PeriodAxis extends ValueAxis
      * @param stroke  the stroke ({@code null} not permitted).
      */
     public void setMinorTickMarkStroke(Stroke stroke) {
-        Args.nullNotPermitted(stroke, "stroke");
-        this.minorTickMarkStroke = stroke;
-        fireChangeEvent();
+        periodAxisProduct.setMinorTickMarkStroke(stroke, this);
     }
 
     /**
@@ -410,7 +404,7 @@ public class PeriodAxis extends ValueAxis
      * @return A paint (never {@code null}).
      */
     public Paint getMinorTickMarkPaint() {
-        return this.minorTickMarkPaint;
+        return this.periodAxisProduct.getMinorTickMarkPaint();
     }
 
     /**
@@ -421,9 +415,7 @@ public class PeriodAxis extends ValueAxis
      * @param paint  the paint ({@code null} not permitted).
      */
     public void setMinorTickMarkPaint(Paint paint) {
-        Args.nullNotPermitted(paint, "paint");
-        this.minorTickMarkPaint = paint;
-        fireChangeEvent();
+        periodAxisProduct.setMinorTickMarkPaint(paint, this);
     }
 
     /**
@@ -561,15 +553,8 @@ public class PeriodAxis extends ValueAxis
         // get the axis label size and update the space object...
         Rectangle2D labelEnclosure = getLabelEnclosure(g2, edge);
         double labelHeight, labelWidth;
-        double tickLabelBandsDimension = 0.0;
-
-        for (PeriodAxisLabelInfo info : this.labelInfo) {
-            FontMetrics fm = g2.getFontMetrics(info.getLabelFont());
-            tickLabelBandsDimension
-                += info.getPadding().extendHeight(fm.getHeight());
-        }
-
-        if (RectangleEdge.isTopOrBottom(edge)) {
+        double tickLabelBandsDimension = tickLabelBandsDimension(g2);
+		if (RectangleEdge.isTopOrBottom(edge)) {
             labelHeight = labelEnclosure.getHeight();
             space.add(labelHeight + tickLabelBandsDimension, edge);
         }
@@ -590,6 +575,15 @@ public class PeriodAxis extends ValueAxis
         space.add(tickMarkSpace, edge);
         return space;
     }
+
+	private double tickLabelBandsDimension(Graphics2D g2) {
+		double tickLabelBandsDimension = 0.0;
+		for (PeriodAxisLabelInfo info : this.labelInfo) {
+			FontMetrics fm = g2.getFontMetrics(info.getLabelFont());
+			tickLabelBandsDimension += info.getPadding().extendHeight(fm.getHeight());
+		}
+		return tickLabelBandsDimension;
+	}
 
     /**
      * Draws the axis on a Java 2D graphics device (such as the screen or a
@@ -725,8 +719,8 @@ public class PeriodAxis extends ValueAxis
                                 y0 + this.minorTickMarkOutsideLength);
                     }
                     if (tt0 >= firstOnAxis) {
-                        g2.setPaint(this.minorTickMarkPaint);
-                        g2.setStroke(this.minorTickMarkStroke);
+                        g2.setPaint(this.periodAxisProduct.getMinorTickMarkPaint());
+                        g2.setStroke(this.periodAxisProduct.getMinorTickMarkStroke());
                         g2.draw(inside);
                         g2.draw(outside);
                     }
@@ -1082,10 +1076,10 @@ public class PeriodAxis extends ValueAxis
                 that.minorTickTimePeriodClass)) {
             return false;
         }
-        if (!this.minorTickMarkPaint.equals(that.minorTickMarkPaint)) {
+        if (!this.periodAxisProduct.getMinorTickMarkPaint().equals(that.periodAxisProduct.getMinorTickMarkPaint())) {
             return false;
         }
-        if (!this.minorTickMarkStroke.equals(that.minorTickMarkStroke)) {
+        if (!this.periodAxisProduct.getMinorTickMarkStroke().equals(that.periodAxisProduct.getMinorTickMarkStroke())) {
             return false;
         }
         if (!Arrays.equals(this.labelInfo, that.labelInfo)) {
@@ -1115,6 +1109,7 @@ public class PeriodAxis extends ValueAxis
     @Override
     public Object clone() throws CloneNotSupportedException {
         PeriodAxis clone = (PeriodAxis) super.clone();
+		clone.periodAxisProduct = (PeriodAxisProduct) this.periodAxisProduct.clone();
         clone.timeZone = (TimeZone) this.timeZone.clone();
         clone.labelInfo = (PeriodAxisLabelInfo[]) this.labelInfo.clone();
         return clone;
@@ -1164,8 +1159,9 @@ public class PeriodAxis extends ValueAxis
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
-        SerialUtils.writeStroke(this.minorTickMarkStroke, stream);
-        SerialUtils.writePaint(this.minorTickMarkPaint, stream);
+		stream.writeObject(this.periodAxisProduct);
+        SerialUtils.writeStroke(this.periodAxisProduct.getMinorTickMarkStroke(), stream);
+        SerialUtils.writePaint(this.periodAxisProduct.getMinorTickMarkPaint(), stream);
     }
 
     /**
@@ -1179,8 +1175,9 @@ public class PeriodAxis extends ValueAxis
     private void readObject(ObjectInputStream stream)
         throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
-        this.minorTickMarkStroke = SerialUtils.readStroke(stream);
-        this.minorTickMarkPaint = SerialUtils.readPaint(stream);
+		this.periodAxisProduct = (PeriodAxisProduct) stream.readObject();
+        periodAxisProduct.setMinorTickMarkStroke2(SerialUtils.readStroke(stream));
+        periodAxisProduct.setMinorTickMarkPaint2(SerialUtils.readPaint(stream));
     }
 
 }

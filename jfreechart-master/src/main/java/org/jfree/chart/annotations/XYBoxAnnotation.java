@@ -231,29 +231,8 @@ public class XYBoxAnnotation extends AbstractXYAnnotation
                      ValueAxis domainAxis, ValueAxis rangeAxis,
                      int rendererIndex, PlotRenderingInfo info) {
 
-        PlotOrientation orientation = plot.getOrientation();
-        RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
-                plot.getDomainAxisLocation(), orientation);
-        RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(
-                plot.getRangeAxisLocation(), orientation);
-
-        double transX0 = domainAxis.valueToJava2D(this.x0, dataArea,
-                domainEdge);
-        double transY0 = rangeAxis.valueToJava2D(this.y0, dataArea, rangeEdge);
-        double transX1 = domainAxis.valueToJava2D(this.x1, dataArea,
-                domainEdge);
-        double transY1 = rangeAxis.valueToJava2D(this.y1, dataArea, rangeEdge);
-
-        Rectangle2D box = null;
-        if (orientation == PlotOrientation.HORIZONTAL) {
-            box = new Rectangle2D.Double(transY0, transX1, transY1 - transY0,
-                    transX0 - transX1);
-        } else if (orientation == PlotOrientation.VERTICAL) {
-            box = new Rectangle2D.Double(transX0, transY1, transX1 - transX0,
-                    transY0 - transY1);
-        }
-
-        if (this.fillPaint != null) {
+        Rectangle2D box = box(plot, dataArea, domainAxis, rangeAxis);
+		if (this.fillPaint != null) {
             g2.setPaint(this.fillPaint);
             g2.fill(box);
         }
@@ -265,6 +244,23 @@ public class XYBoxAnnotation extends AbstractXYAnnotation
         }
         addEntity(info, box, rendererIndex, getToolTipText(), getURL());
     }
+
+	private Rectangle2D box(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		double transX0 = domainAxis.valueToJava2D(this.x0, dataArea, domainEdge);
+		double transY0 = rangeAxis.valueToJava2D(this.y0, dataArea, rangeEdge);
+		double transX1 = domainAxis.valueToJava2D(this.x1, dataArea, domainEdge);
+		double transY1 = rangeAxis.valueToJava2D(this.y1, dataArea, rangeEdge);
+		Rectangle2D box = null;
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			box = new Rectangle2D.Double(transY0, transX1, transY1 - transY0, transX0 - transX1);
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			box = new Rectangle2D.Double(transX0, transY1, transX1 - transX0, transY0 - transY1);
+		}
+		return box;
+	}
 
     /**
      * Tests this annotation for equality with an arbitrary object.

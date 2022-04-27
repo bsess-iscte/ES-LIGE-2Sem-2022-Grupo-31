@@ -127,17 +127,20 @@ public class TickUnits implements TickUnitSource, Cloneable, Serializable {
      */
     @Override
     public TickUnit getLargerTickUnit(TickUnit unit) {
-        int index = Collections.binarySearch(this.tickUnits, unit);
-        if (index >= 0) {
-            index = index + 1;
-        }
-        else {
-            index = -index;
-        }
-
-        return (TickUnit) this.tickUnits.get(Math.min(index,
+        int index = index(unit);
+		return (TickUnit) this.tickUnits.get(Math.min(index,
                 this.tickUnits.size() - 1));
     }
+
+	private int index(TickUnit unit) {
+		int index = Collections.binarySearch(this.tickUnits, unit);
+		if (index >= 0) {
+			index = index + 1;
+		} else {
+			index = -index;
+		}
+		return index;
+	}
 
     /**
      * Returns the tick unit in the collection that is greater than or equal

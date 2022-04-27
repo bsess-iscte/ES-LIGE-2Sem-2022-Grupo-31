@@ -78,7 +78,9 @@ import org.jfree.data.category.CategoryDataset;
  */
 public class CategoryAxis extends Axis implements Cloneable, Serializable {
 
-    /** For serialization. */
+    private CategoryAxisProduct categoryAxisProduct = new CategoryAxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 5886554608114265863L;
 
     /**
@@ -103,21 +105,6 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 
     /** The maximum number of lines for category labels. */
     private int maximumCategoryLabelLines;
-
-    /**
-     * A ratio that is multiplied by the width of one category to determine the
-     * maximum label width.
-     */
-    private float maximumCategoryLabelWidthRatio;
-
-    /** The category label offset. */
-    private int categoryLabelPositionOffset;
-
-    /**
-     * A structure defining the category label positions for each axis
-     * location.
-     */
-    private CategoryLabelPositions categoryLabelPositions;
 
     /** Storage for tick label font overrides (if any). */
     private Map<Comparable, Font> tickLabelFontMap; 
@@ -150,10 +137,10 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
         this.upperMargin = DEFAULT_AXIS_MARGIN;
         this.categoryMargin = DEFAULT_CATEGORY_MARGIN;
         this.maximumCategoryLabelLines = 1;
-        this.maximumCategoryLabelWidthRatio = 0.0f;
+        categoryAxisProduct.setMaximumCategoryLabelWidthRatio2(0.0f);
 
-        this.categoryLabelPositionOffset = 4;
-        this.categoryLabelPositions = CategoryLabelPositions.STANDARD;
+        categoryAxisProduct.setCategoryLabelPositionOffset2(4);
+        categoryAxisProduct.setCategoryLabelPositions2(CategoryLabelPositions.STANDARD);
         this.tickLabelFontMap = new HashMap<>();
         this.tickLabelPaintMap = new HashMap<>();
         this.categoryLabelToolTips = new HashMap<>();
@@ -270,7 +257,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
      * @see #setMaximumCategoryLabelWidthRatio(float)
      */
     public float getMaximumCategoryLabelWidthRatio() {
-        return this.maximumCategoryLabelWidthRatio;
+        return this.categoryAxisProduct.getMaximumCategoryLabelWidthRatio();
     }
 
     /**
@@ -282,8 +269,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
      * @see #getMaximumCategoryLabelWidthRatio()
      */
     public void setMaximumCategoryLabelWidthRatio(float ratio) {
-        this.maximumCategoryLabelWidthRatio = ratio;
-        fireChangeEvent();
+        categoryAxisProduct.setMaximumCategoryLabelWidthRatio(ratio, this);
     }
 
     /**
@@ -295,7 +281,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
      * @see #setCategoryLabelPositionOffset(int)
      */
     public int getCategoryLabelPositionOffset() {
-        return this.categoryLabelPositionOffset;
+        return this.categoryAxisProduct.getCategoryLabelPositionOffset();
     }
 
     /**
@@ -308,8 +294,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
      * @see #getCategoryLabelPositionOffset()
      */
     public void setCategoryLabelPositionOffset(int offset) {
-        this.categoryLabelPositionOffset = offset;
-        fireChangeEvent();
+        categoryAxisProduct.setCategoryLabelPositionOffset(offset, this);
     }
 
     /**
@@ -321,7 +306,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
      * @see #setCategoryLabelPositions(CategoryLabelPositions)
      */
     public CategoryLabelPositions getCategoryLabelPositions() {
-        return this.categoryLabelPositions;
+        return this.categoryAxisProduct.getCategoryLabelPositions();
     }
 
     /**
@@ -333,9 +318,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
      * @see #getCategoryLabelPositions()
      */
     public void setCategoryLabelPositions(CategoryLabelPositions positions) {
-        Args.nullNotPermitted(positions, "positions");
-        this.categoryLabelPositions = positions;
-        fireChangeEvent();
+        categoryAxisProduct.setCategoryLabelPositions(positions, this);
     }
 
     /**
@@ -853,12 +836,12 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
         if (RectangleEdge.isTopOrBottom(edge)) {
             labelHeight = labelEnclosure.getHeight();
             space.add(labelHeight + tickLabelHeight
-                    + this.categoryLabelPositionOffset, edge);
+                    + this.categoryAxisProduct.getCategoryLabelPositionOffset(), edge);
         }
         else if (RectangleEdge.isLeftOrRight(edge)) {
             labelWidth = labelEnclosure.getWidth();
             space.add(labelWidth + tickLabelWidth
-                    + this.categoryLabelPositionOffset, edge);
+                    + this.categoryAxisProduct.getCategoryLabelPositionOffset(), edge);
         }
         return space;
     }
@@ -953,7 +936,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
             g2.setPaint(getTickLabelPaint(tick.getCategory()));
 
             CategoryLabelPosition position
-                    = this.categoryLabelPositions.getLabelPosition(edge);
+                    = this.categoryAxisProduct.getCategoryLabelPositions().getLabelPosition(edge);
             double x0 = 0.0;
             double x1 = 0.0;
             double y0 = 0.0;
@@ -963,7 +946,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                         edge);
                 x1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea, 
                         edge);
-                y1 = state.getCursor() - this.categoryLabelPositionOffset;
+                y1 = state.getCursor() - this.categoryAxisProduct.getCategoryLabelPositionOffset();
                 y0 = y1 - state.getMax();
             }
             else if (edge == RectangleEdge.BOTTOM) {
@@ -971,7 +954,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                         edge);
                 x1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea, 
                         edge);
-                y0 = state.getCursor() + this.categoryLabelPositionOffset;
+                y0 = state.getCursor() + this.categoryAxisProduct.getCategoryLabelPositionOffset();
                 y1 = y0 + state.getMax();
             }
             else if (edge == RectangleEdge.LEFT) {
@@ -979,7 +962,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                         edge);
                 y1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
                         edge);
-                x1 = state.getCursor() - this.categoryLabelPositionOffset;
+                x1 = state.getCursor() - this.categoryAxisProduct.getCategoryLabelPositionOffset();
                 x0 = x1 - state.getMax();
             }
             else if (edge == RectangleEdge.RIGHT) {
@@ -987,7 +970,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                         edge);
                 y1 = getCategoryEnd(categoryIndex, ticks.size(), dataArea,
                         edge);
-                x0 = state.getCursor() + this.categoryLabelPositionOffset;
+                x0 = state.getCursor() + this.categoryAxisProduct.getCategoryLabelPositionOffset();
                 x1 = x0 - state.getMax();
             }
             Rectangle2D area = new Rectangle2D.Double(x0, y0, (x1 - x0),
@@ -1017,19 +1000,19 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
         }
 
         if (edge.equals(RectangleEdge.TOP)) {
-            double h = state.getMax() + this.categoryLabelPositionOffset;
+            double h = state.getMax() + this.categoryAxisProduct.getCategoryLabelPositionOffset();
             state.cursorUp(h);
         }
         else if (edge.equals(RectangleEdge.BOTTOM)) {
-            double h = state.getMax() + this.categoryLabelPositionOffset;
+            double h = state.getMax() + this.categoryAxisProduct.getCategoryLabelPositionOffset();
             state.cursorDown(h);
         }
         else if (edge == RectangleEdge.LEFT) {
-            double w = state.getMax() + this.categoryLabelPositionOffset;
+            double w = state.getMax() + this.categoryAxisProduct.getCategoryLabelPositionOffset();
             state.cursorLeft(w);
         }
         else if (edge == RectangleEdge.RIGHT) {
-            double w = state.getMax() + this.categoryLabelPositionOffset;
+            double w = state.getMax() + this.categoryAxisProduct.getCategoryLabelPositionOffset();
             state.cursorRight(w);
         }
         return state;
@@ -1062,8 +1045,8 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
 
         if (categories != null) {
             CategoryLabelPosition position
-                    = this.categoryLabelPositions.getLabelPosition(edge);
-            float r = this.maximumCategoryLabelWidthRatio;
+                    = this.categoryAxisProduct.getCategoryLabelPositions().getLabelPosition(edge);
+            float r = this.categoryAxisProduct.getMaximumCategoryLabelWidthRatio();
             if (r <= 0.0) {
                 r = position.getWidthRatio();
             }
@@ -1087,12 +1070,12 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
                 g2.setFont(getTickLabelFont(category));
                 TextBlock label = createLabel(category, l * r, edge, g2);
                 if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
-                    max = Math.max(max, calculateCategoryLabelHeight(label,
-                            position, getTickLabelInsets(), g2));
+                    max = Math.max(max, getTickLabelInsets().calculateCategoryLabelHeight(label,
+                            position, g2));
                 } else if (edge == RectangleEdge.LEFT
                         || edge == RectangleEdge.RIGHT) {
-                    max = Math.max(max, calculateCategoryLabelWidth(label,
-                            position, getTickLabelInsets(), g2));
+                    max = Math.max(max, getTickLabelInsets().calculateCategoryLabelWidth(label,
+                            position, g2));
                 }
                 Tick tick = new CategoryTick(category, label,
                         position.getLabelAnchor(),
@@ -1191,50 +1174,6 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
     }
 
     /**
-     * Calculates the width of a category label when rendered.
-     *
-     * @param label  the text block ({@code null} not permitted).
-     * @param position  the position.
-     * @param insets  the label insets.
-     * @param g2  the graphics device.
-     *
-     * @return The width.
-     */
-    protected double calculateCategoryLabelWidth(TextBlock label, 
-            CategoryLabelPosition position, RectangleInsets insets, Graphics2D g2) {
-        Size2D size = label.calculateDimensions(g2);
-        Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-                size.getHeight());
-        Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-                0.0f, 0.0f);
-        double w = rotatedBox.getBounds2D().getWidth() + insets.getLeft()
-                + insets.getRight();
-        return w;
-    }
-
-    /**
-     * Calculates the height of a category label when rendered.
-     *
-     * @param block  the text block ({@code null} not permitted).
-     * @param position  the label position ({@code null} not permitted).
-     * @param insets  the label insets ({@code null} not permitted).
-     * @param g2  the graphics device ({@code null} not permitted).
-     *
-     * @return The height.
-     */
-    protected double calculateCategoryLabelHeight(TextBlock block,
-            CategoryLabelPosition position, RectangleInsets insets, Graphics2D g2) {
-        Size2D size = block.calculateDimensions(g2);
-        Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(),
-                size.getHeight());
-        Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(),
-                0.0f, 0.0f);
-        double h = rotatedBox.getBounds2D().getHeight()
-                   + insets.getTop() + insets.getBottom();
-        return h;
-    }
-
-    /**
      * Creates a clone of the axis.
      *
      * @return A clone.
@@ -1245,6 +1184,7 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         CategoryAxis clone = (CategoryAxis) super.clone();
+		clone.categoryAxisProduct = (CategoryAxisProduct) this.categoryAxisProduct.clone();
         clone.tickLabelFontMap = new HashMap<>(this.tickLabelFontMap);
         clone.tickLabelPaintMap = new HashMap<>(this.tickLabelPaintMap);
         clone.categoryLabelToolTips = new HashMap<>(this.categoryLabelToolTips);
@@ -1280,15 +1220,15 @@ public class CategoryAxis extends Axis implements Cloneable, Serializable {
         if (that.categoryMargin != this.categoryMargin) {
             return false;
         }
-        if (that.maximumCategoryLabelWidthRatio
-                != this.maximumCategoryLabelWidthRatio) {
+        if (that.categoryAxisProduct.getMaximumCategoryLabelWidthRatio()
+                != this.categoryAxisProduct.getMaximumCategoryLabelWidthRatio()) {
             return false;
         }
-        if (that.categoryLabelPositionOffset
-                != this.categoryLabelPositionOffset) {
+        if (that.categoryAxisProduct.getCategoryLabelPositionOffset()
+                != this.categoryAxisProduct.getCategoryLabelPositionOffset()) {
             return false;
         }
-        if (!Objects.equals(that.categoryLabelPositions, this.categoryLabelPositions)) {
+        if (!Objects.equals(that.categoryAxisProduct.getCategoryLabelPositions(), this.categoryAxisProduct.getCategoryLabelPositions())) {
             return false;
         }
         if (!Objects.equals(that.categoryLabelToolTips, this.categoryLabelToolTips)) {

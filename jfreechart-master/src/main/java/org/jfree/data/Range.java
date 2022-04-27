@@ -451,4 +451,19 @@ public strictfp class Range implements Serializable {
         return ("Range[" + this.lower + "," + this.upper + "]");
     }
 
+	/**
+	 * Maps a data value into the fixed range.
+	 * @param value   the value.
+	 * @return  The mapped value.
+	 */
+	public double mapValueToFixedRange(double value) {
+		double lower = getLowerBound();
+		double length = getLength();
+		if (value < lower) {
+			return lower + length + ((value - lower) % length);
+		} else {
+			return lower + ((value - lower) % length);
+		}
+	}
+
 }

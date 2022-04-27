@@ -108,7 +108,9 @@ import org.jfree.chart.util.ShadowGenerator;
 public class StandardChartTheme implements ChartTheme, Cloneable,
         PublicCloneable, Serializable {
 
-    /** The name of this theme. */
+    private StandardChartThemeProduct standardChartThemeProduct = new StandardChartThemeProduct();
+
+	/** The name of this theme. */
     private final String name;
 
     /**
@@ -145,9 +147,6 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
 
     /** The legend item paint. */
     private transient Paint legendItemPaint;
-
-    /** The drawing supplier. */
-    private DrawingSupplier drawingSupplier;
 
     /** The background paint for the plot. */
     private transient Paint plotBackgroundPaint;
@@ -251,18 +250,14 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
         theme.axisLabelPaint = Color.WHITE;
         theme.shadowPaint = Color.DARK_GRAY;
         theme.itemLabelPaint = Color.WHITE;
-        theme.drawingSupplier = new DefaultDrawingSupplier(
-                new Paint[] {Color.decode("0xFFFF00"),
-                        Color.decode("0x0036CC"), Color.decode("0xFF0000"),
-                        Color.decode("0xFFFF7F"), Color.decode("0x6681CC"),
-                        Color.decode("0xFF7F7F"), Color.decode("0xFFFFBF"),
-                        Color.decode("0x99A6CC"), Color.decode("0xFFBFBF"),
-                        Color.decode("0xA9A938"), Color.decode("0x2D4587")},
-                new Paint[] {Color.decode("0xFFFF00"),
-                        Color.decode("0x0036CC")},
-                new Stroke[] {new BasicStroke(2.0f)},
-                new Stroke[] {new BasicStroke(0.5f)},
-                DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE);
+        theme.standardChartThemeProduct.setDrawingSupplier2(new DefaultDrawingSupplier(
+				new Paint[] { Color.decode("0xFFFF00"), Color.decode("0x0036CC"), Color.decode("0xFF0000"),
+						Color.decode("0xFFFF7F"), Color.decode("0x6681CC"), Color.decode("0xFF7F7F"),
+						Color.decode("0xFFFFBF"), Color.decode("0x99A6CC"), Color.decode("0xFFBFBF"),
+						Color.decode("0xA9A938"), Color.decode("0x2D4587") },
+				new Paint[] { Color.decode("0xFFFF00"), Color.decode("0x0036CC") },
+				new Stroke[] { new BasicStroke(2.0f) }, new Stroke[] { new BasicStroke(0.5f) },
+				DefaultDrawingSupplier.DEFAULT_SHAPE_SEQUENCE));
         theme.errorIndicatorPaint = Color.LIGHT_GRAY;
         theme.gridBandPaint = new Color(255, 255, 255, 20);
         theme.gridBandAlternatePaint = new Color(255, 255, 255, 40);
@@ -315,7 +310,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
         this.legendBackgroundPaint = Color.WHITE;
         this.legendItemPaint = Color.DARK_GRAY;
         this.chartBackgroundPaint = Color.WHITE;
-        this.drawingSupplier = new DefaultDrawingSupplier();
+        standardChartThemeProduct.setDrawingSupplier2(new DefaultDrawingSupplier());
         this.plotBackgroundPaint = Color.LIGHT_GRAY;
         this.plotOutlinePaint = Color.BLACK;
         this.labelLinkPaint = Color.BLACK;
@@ -1010,17 +1005,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      * @return A clone of the drawing supplier.
      */
     public DrawingSupplier getDrawingSupplier() {
-        DrawingSupplier result = null;
-        if (this.drawingSupplier instanceof PublicCloneable) {
-            PublicCloneable pc = (PublicCloneable) this.drawingSupplier;
-              try {
-                result = (DrawingSupplier) pc.clone();
-            }
-            catch (CloneNotSupportedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return result;
+        return standardChartThemeProduct.getDrawingSupplier();
     }
 
     /**
@@ -1031,8 +1016,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      * @see #getDrawingSupplier()
      */
     public void setDrawingSupplier(DrawingSupplier supplier) {
-        Args.nullNotPermitted(supplier, "supplier");
-        this.drawingSupplier = supplier;
+        standardChartThemeProduct.setDrawingSupplier(supplier);
     }
 
     /**
@@ -1086,12 +1070,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
         else if (title instanceof PaintScaleLegend) {
-            PaintScaleLegend psl = (PaintScaleLegend) title;
-            psl.setBackgroundPaint(this.legendBackgroundPaint);
-            ValueAxis axis = psl.getAxis();
-            if (axis != null) {
-                applyToValueAxis(axis);
-            }
+            ValueAxis axis = applyToPaintScaleLegend(title);
         }
         else if (title instanceof CompositeTitle) {
             CompositeTitle ct = (CompositeTitle) title;
@@ -1103,6 +1082,16 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
+
+	private ValueAxis applyToPaintScaleLegend(Title title) {
+		PaintScaleLegend psl = (PaintScaleLegend) title;
+		psl.setBackgroundPaint(this.legendBackgroundPaint);
+		ValueAxis axis = psl.getAxis();
+		if (axis != null) {
+			applyToValueAxis(axis);
+		}
+		return axis;
+	}
 
     /**
      * Applies the attributes of this theme to the specified container.
@@ -1138,15 +1127,9 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      */
     protected void applyToPlot(Plot plot) {
         Args.nullNotPermitted(plot, "plot");
-        if (plot.getDrawingSupplier() != null) {
-            plot.setDrawingSupplier(getDrawingSupplier());
-        }
-        if (plot.getBackgroundPaint() != null) {
-            plot.setBackgroundPaint(this.plotBackgroundPaint);
-        }
-        plot.setOutlinePaint(this.plotOutlinePaint);
 
-        // now handle specific plot types (and yes, I know this is some
+        plotDrawSetter(plot);
+		    // now handle specific plot types (and yes, I know this is some
         // really ugly code that has to be manually updated any time a new
         // plot type is added - I should have written something much cooler,
         // but I didn't and neither did anyone else).
@@ -1172,12 +1155,22 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             applyToThermometerPlot((ThermometerPlot) plot);
         }
         else if (plot instanceof SpiderWebPlot) {
-            applyToSpiderWebPlot((SpiderWebPlot) plot);
+            ((SpiderWebPlot) plot).applyToSpiderWebPlot(regularFont, axisLabelPaint);
         }
         else if (plot instanceof PolarPlot) {
             applyToPolarPlot((PolarPlot) plot);
         }
     }
+
+	private void plotDrawSetter(Plot plot) {
+		if (plot.getDrawingSupplier() != null) {
+			plot.setDrawingSupplier(getDrawingSupplier());
+		}
+		if (plot.getBackgroundPaint() != null) {
+			plot.setBackgroundPaint(this.plotBackgroundPaint);
+		}
+		plot.setOutlinePaint(this.plotOutlinePaint);
+	}
 
     /**
      * Applies the attributes of this theme to a {@link PiePlot} instance.
@@ -1220,13 +1213,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      * @param plot  the plot ({@code null} not permitted).
      */
     protected void applyToCategoryPlot(CategoryPlot plot) {
-        plot.setAxisOffset(this.axisOffset);
-        plot.setDomainGridlinePaint(this.domainGridlinePaint);
-        plot.setRangeGridlinePaint(this.rangeGridlinePaint);
-        plot.setRangeZeroBaselinePaint(this.baselinePaint);
-        plot.setShadowGenerator(this.shadowGenerator);
-
-        // process all domain axes
+        plotSetter(plot);
+		// process all domain axes
         int domainAxisCount = plot.getDomainAxisCount();
         for (int i = 0; i < domainAxisCount; i++) {
             CategoryAxis axis = plot.getDomainAxis(i);
@@ -1270,6 +1258,14 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
+
+	private void plotSetter(CategoryPlot plot) {
+		plot.setAxisOffset(this.axisOffset);
+		plot.setDomainGridlinePaint(this.domainGridlinePaint);
+		plot.setRangeGridlinePaint(this.rangeGridlinePaint);
+		plot.setRangeZeroBaselinePaint(this.baselinePaint);
+		plot.setShadowGenerator(this.shadowGenerator);
+	}
 
     /**
      * Applies the attributes of this theme to a {@link XYPlot}.
@@ -1378,17 +1374,6 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
     }
 
     /**
-     * Applies the attributes of this theme to a {@link SpiderWebPlot}.
-     *
-     * @param plot  the plot ({@code null} not permitted).
-     */
-    protected void applyToSpiderWebPlot(SpiderWebPlot plot) {
-        plot.setLabelFont(this.regularFont);
-        plot.setLabelPaint(this.axisLabelPaint);
-        plot.setAxisLinePaint(this.axisLabelPaint);
-    }
-
-    /**
      * Applies the attributes of this theme to a {@link MeterPlot}.
      *
      * @param plot  the plot ({@code null} not permitted).
@@ -1482,20 +1467,6 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
     }
 
     /**
-     * Applies the attributes for this theme to an {@link AbstractRenderer}.
-     *
-     * @param renderer  the renderer ({@code null} not permitted).
-     */
-    protected void applyToAbstractRenderer(AbstractRenderer renderer) {
-        if (renderer.getAutoPopulateSeriesPaint()) {
-            renderer.clearSeriesPaints(false);
-        }
-        if (renderer.getAutoPopulateSeriesStroke()) {
-            renderer.clearSeriesStrokes(false);
-        }
-    }
-
-    /**
      * Applies the settings of this theme to the specified renderer.
      *
      * @param renderer  the renderer ({@code null} not permitted).
@@ -1504,7 +1475,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
         Args.nullNotPermitted(renderer, "renderer");
 
         if (renderer instanceof AbstractRenderer) {
-            applyToAbstractRenderer((AbstractRenderer) renderer);
+            ((AbstractRenderer) renderer).applyToAbstractRenderer();
         }
 
         renderer.setDefaultItemLabelFont(this.regularFont);
@@ -1542,7 +1513,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
     protected void applyToXYItemRenderer(XYItemRenderer renderer) {
         Args.nullNotPermitted(renderer, "renderer");
         if (renderer instanceof AbstractRenderer) {
-            applyToAbstractRenderer((AbstractRenderer) renderer);
+            ((AbstractRenderer) renderer).applyToAbstractRenderer();
         }
         renderer.setDefaultItemLabelFont(this.regularFont);
         renderer.setDefaultItemLabelPaint(this.itemLabelPaint);
@@ -1615,7 +1586,7 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
         if (!PaintUtils.equal(this.legendItemPaint, that.legendItemPaint)) {
             return false;
         }
-        if (!this.drawingSupplier.equals(that.drawingSupplier)) {
+        if (!this.standardChartThemeProduct.getDrawingSupplier2().equals(that.standardChartThemeProduct.getDrawingSupplier2())) {
             return false;
         }
         if (!PaintUtils.equal(this.plotBackgroundPaint,

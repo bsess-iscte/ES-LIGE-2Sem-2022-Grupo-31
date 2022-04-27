@@ -71,7 +71,9 @@ import java.util.Objects;
 public abstract class ValueAxis extends Axis
         implements Cloneable, PublicCloneable, Serializable {
 
-    /** For serialization. */
+    private transient ValueAxisProduct valueAxisProduct = new ValueAxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 3698345477322391456L;
 
     /** The default axis range. */
@@ -109,18 +111,6 @@ public abstract class ValueAxis extends Axis
      * the axis line.
      */
     private boolean negativeArrowVisible;
-
-    /** The shape used for an up arrow. */
-    private transient Shape upArrow;
-
-    /** The shape used for a down arrow. */
-    private transient Shape downArrow;
-
-    /** The shape used for a left arrow. */
-    private transient Shape leftArrow;
-
-    /** The shape used for a right arrow. */
-    private transient Shape rightArrow;
 
     /** A flag that affects the orientation of the values on the axis. */
     private boolean inverted;
@@ -220,28 +210,28 @@ public abstract class ValueAxis extends Axis
         p1.addPoint(-2, 2);
         p1.addPoint(2, 2);
 
-        this.upArrow = p1;
+        valueAxisProduct.setUpArrow2(p1);
 
         Polygon p2 = new Polygon();
         p2.addPoint(0, 0);
         p2.addPoint(-2, -2);
         p2.addPoint(2, -2);
 
-        this.downArrow = p2;
+        valueAxisProduct.setDownArrow2(p2);
 
         Polygon p3 = new Polygon();
         p3.addPoint(0, 0);
         p3.addPoint(-2, -2);
         p3.addPoint(-2, 2);
 
-        this.rightArrow = p3;
+        valueAxisProduct.setRightArrow2(p3);
 
         Polygon p4 = new Polygon();
         p4.addPoint(0, 0);
         p4.addPoint(2, -2);
         p4.addPoint(2, 2);
 
-        this.leftArrow = p4;
+        valueAxisProduct.setLeftArrow2(p4);
 
         this.verticalTickLabels = false;
         this.minorTickCount = 0;
@@ -338,7 +328,7 @@ public abstract class ValueAxis extends Axis
      * @see #setUpArrow(Shape)
      */
     public Shape getUpArrow() {
-        return this.upArrow;
+        return this.valueAxisProduct.getUpArrow();
     }
 
     /**
@@ -351,9 +341,7 @@ public abstract class ValueAxis extends Axis
      * @see #getUpArrow()
      */
     public void setUpArrow(Shape arrow) {
-        Args.nullNotPermitted(arrow, "arrow");
-        this.upArrow = arrow;
-        fireChangeEvent();
+        valueAxisProduct.setUpArrow(arrow, this);
     }
 
     /**
@@ -365,7 +353,7 @@ public abstract class ValueAxis extends Axis
      * @see #setDownArrow(Shape)
      */
     public Shape getDownArrow() {
-        return this.downArrow;
+        return this.valueAxisProduct.getDownArrow();
     }
 
     /**
@@ -378,9 +366,7 @@ public abstract class ValueAxis extends Axis
      * @see #getDownArrow()
      */
     public void setDownArrow(Shape arrow) {
-        Args.nullNotPermitted(arrow, "arrow");
-        this.downArrow = arrow;
-        fireChangeEvent();
+        valueAxisProduct.setDownArrow(arrow, this);
     }
 
     /**
@@ -392,7 +378,7 @@ public abstract class ValueAxis extends Axis
      * @see #setLeftArrow(Shape)
      */
     public Shape getLeftArrow() {
-        return this.leftArrow;
+        return this.valueAxisProduct.getLeftArrow();
     }
 
     /**
@@ -405,9 +391,7 @@ public abstract class ValueAxis extends Axis
      * @see #getLeftArrow()
      */
     public void setLeftArrow(Shape arrow) {
-        Args.nullNotPermitted(arrow, "arrow");
-        this.leftArrow = arrow;
-        fireChangeEvent();
+        valueAxisProduct.setLeftArrow(arrow, this);
     }
 
     /**
@@ -419,7 +403,7 @@ public abstract class ValueAxis extends Axis
      * @see #setRightArrow(Shape)
      */
     public Shape getRightArrow() {
-        return this.rightArrow;
+        return this.valueAxisProduct.getRightArrow();
     }
 
     /**
@@ -432,9 +416,7 @@ public abstract class ValueAxis extends Axis
      * @see #getRightArrow()
      */
     public void setRightArrow(Shape arrow) {
-        Args.nullNotPermitted(arrow, "arrow");
-        this.rightArrow = arrow;
-        fireChangeEvent();
+        valueAxisProduct.setRightArrow(arrow, this);
     }
 
     /**
@@ -495,12 +477,12 @@ public abstract class ValueAxis extends Axis
             if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
                 x = dataArea.getMaxX();
                 y = cursor;
-                arrow = this.rightArrow;
+                arrow = this.valueAxisProduct.getRightArrow();
             } else if (edge == RectangleEdge.LEFT
                     || edge == RectangleEdge.RIGHT) {
                 x = cursor;
                 y = dataArea.getMinY();
-                arrow = this.upArrow;
+                arrow = this.valueAxisProduct.getUpArrow();
             }
 
             // draw the arrow...
@@ -518,12 +500,12 @@ public abstract class ValueAxis extends Axis
             if (edge == RectangleEdge.TOP || edge == RectangleEdge.BOTTOM) {
                 x = dataArea.getMinX();
                 y = cursor;
-                arrow = this.leftArrow;
+                arrow = this.valueAxisProduct.getLeftArrow();
             } else if (edge == RectangleEdge.LEFT
                     || edge == RectangleEdge.RIGHT) {
                 x = cursor;
                 y = dataArea.getMaxY();
-                arrow = this.downArrow;
+                arrow = this.valueAxisProduct.getDownArrow();
             }
 
             // draw the arrow...
@@ -1633,6 +1615,7 @@ public abstract class ValueAxis extends Axis
     @Override
     public Object clone() throws CloneNotSupportedException {
         ValueAxis clone = (ValueAxis) super.clone();
+		clone.valueAxisProduct = (ValueAxisProduct) this.valueAxisProduct.clone();
         return clone;
     }
 
@@ -1645,10 +1628,11 @@ public abstract class ValueAxis extends Axis
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
-        SerialUtils.writeShape(this.upArrow, stream);
-        SerialUtils.writeShape(this.downArrow, stream);
-        SerialUtils.writeShape(this.leftArrow, stream);
-        SerialUtils.writeShape(this.rightArrow, stream);
+		stream.writeObject(this.valueAxisProduct);
+        SerialUtils.writeShape(this.valueAxisProduct.getUpArrow(), stream);
+        SerialUtils.writeShape(this.valueAxisProduct.getDownArrow(), stream);
+        SerialUtils.writeShape(this.valueAxisProduct.getLeftArrow(), stream);
+        SerialUtils.writeShape(this.valueAxisProduct.getRightArrow(), stream);
     }
 
     /**
@@ -1663,10 +1647,11 @@ public abstract class ValueAxis extends Axis
             throws IOException, ClassNotFoundException {
 
         stream.defaultReadObject();
-        this.upArrow = SerialUtils.readShape(stream);
-        this.downArrow = SerialUtils.readShape(stream);
-        this.leftArrow = SerialUtils.readShape(stream);
-        this.rightArrow = SerialUtils.readShape(stream);
+		this.valueAxisProduct = (ValueAxisProduct) stream.readObject();
+        valueAxisProduct.setUpArrow2(SerialUtils.readShape(stream));
+        valueAxisProduct.setDownArrow2(SerialUtils.readShape(stream));
+        valueAxisProduct.setLeftArrow2(SerialUtils.readShape(stream));
+        valueAxisProduct.setRightArrow2(SerialUtils.readShape(stream));
     }
 
 }

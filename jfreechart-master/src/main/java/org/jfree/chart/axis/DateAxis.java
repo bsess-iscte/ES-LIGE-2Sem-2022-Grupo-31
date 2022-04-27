@@ -530,18 +530,22 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
      */
     public void setMinimumDate(Date date) {
         Args.nullNotPermitted(date, "date");
-        // check the new minimum date relative to the current maximum date
-        Date maxDate = getMaximumDate();
-        long maxMillis = maxDate.getTime();
-        long newMinMillis = date.getTime();
-        if (maxMillis <= newMinMillis) {
-            Date oldMin = getMinimumDate();
-            long length = maxMillis - oldMin.getTime();
-            maxDate = new Date(newMinMillis + length);
-        }
-        setRange(new DateRange(date, maxDate), true, false);
+        Date maxDate = maxDate(date);
+		setRange(new DateRange(date, maxDate), true, false);
         fireChangeEvent();
     }
+
+	private Date maxDate(Date date) {
+		Date maxDate = getMaximumDate();
+		long maxMillis = maxDate.getTime();
+		long newMinMillis = date.getTime();
+		if (maxMillis <= newMinMillis) {
+			Date oldMin = getMinimumDate();
+			long length = maxMillis - oldMin.getTime();
+			maxDate = new Date(newMinMillis + length);
+		}
+		return maxDate;
+	}
 
     /**
      * Returns the latest date visible on the axis.
@@ -578,18 +582,22 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
      */
     public void setMaximumDate(Date maximumDate) {
         Args.nullNotPermitted(maximumDate, "maximumDate");
-        // check the new maximum date relative to the current minimum date
-        Date minDate = getMinimumDate();
-        long minMillis = minDate.getTime();
-        long newMaxMillis = maximumDate.getTime();
-        if (minMillis >= newMaxMillis) {
-            Date oldMax = getMaximumDate();
-            long length = oldMax.getTime() - minMillis;
-            minDate = new Date(newMaxMillis - length);
-        }
-        setRange(new DateRange(minDate, maximumDate), true, false);
+        Date minDate = minDate(maximumDate);
+		setRange(new DateRange(minDate, maximumDate), true, false);
         fireChangeEvent();
     }
+
+	private Date minDate(Date maximumDate) {
+		Date minDate = getMinimumDate();
+		long minMillis = minDate.getTime();
+		long newMaxMillis = maximumDate.getTime();
+		if (minMillis >= newMaxMillis) {
+			Date oldMax = getMaximumDate();
+			long length = oldMax.getTime() - minMillis;
+			minDate = new Date(newMaxMillis - length);
+		}
+		return minDate;
+	}
 
     /**
      * Returns the tick mark position (start, middle or end of the time period).
@@ -716,33 +724,31 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
     public double java2DToValue(double java2DValue, Rectangle2D area, 
             RectangleEdge edge) {
 
-        DateRange range = (DateRange) getRange();
-        double axisMin = this.timeline.toTimelineValue(range.getLowerMillis());
-        double axisMax = this.timeline.toTimelineValue(range.getUpperMillis());
-
-        double min = 0.0;
-        double max = 0.0;
-        if (RectangleEdge.isTopOrBottom(edge)) {
-            min = area.getX();
-            max = area.getMaxX();
-        }
-        else if (RectangleEdge.isLeftOrRight(edge)) {
-            min = area.getMaxY();
-            max = area.getY();
-        }
-
-        double result;
-        if (isInverted()) {
-             result = axisMax - ((java2DValue - min) / (max - min)
-                      * (axisMax - axisMin));
-        }
-        else {
-             result = axisMin + ((java2DValue - min) / (max - min)
-                      * (axisMax - axisMin));
-        }
-
-        return this.timeline.toMillisecond((long) result);
+        double result = result(java2DValue, area, edge);
+		return this.timeline.toMillisecond((long) result);
     }
+
+	private double result(double java2DValue, Rectangle2D area, RectangleEdge edge) {
+		DateRange range = (DateRange) getRange();
+		double axisMin = this.timeline.toTimelineValue(range.getLowerMillis());
+		double axisMax = this.timeline.toTimelineValue(range.getUpperMillis());
+		double min = 0.0;
+		double max = 0.0;
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			min = area.getX();
+			max = area.getMaxX();
+		} else if (RectangleEdge.isLeftOrRight(edge)) {
+			min = area.getMaxY();
+			max = area.getY();
+		}
+		double result;
+		if (isInverted()) {
+			result = axisMax - ((java2DValue - min) / (max - min) * (axisMax - axisMin));
+		} else {
+			result = axisMin + ((java2DValue - min) / (max - min) * (axisMax - axisMin));
+		}
+		return result;
+	}
 
     /**
      * Calculates the value of the lowest visible tick on the axis.
@@ -776,7 +782,7 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
      */
     protected Date previousStandardDate(Date date, DateTickUnit unit) {
 
-        int milliseconds;
+        int milliseconds = 0;
         int seconds;
         int minutes;
         int hours;
@@ -812,16 +818,8 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
             days = calendar.get(Calendar.DATE);
             hours = calendar.get(Calendar.HOUR_OF_DAY);
             minutes = calendar.get(Calendar.MINUTE);
-            if (this.tickMarkPosition == DateTickMarkPosition.START) {
-                milliseconds = 0;
-            }
-            else if (this.tickMarkPosition == DateTickMarkPosition.MIDDLE) {
-                milliseconds = 500;
-            }
-            else {
-                milliseconds = 999;
-            }
-            calendar.set(Calendar.MILLISECOND, milliseconds);
+            milliseconds = milliseconds(milliseconds);
+			calendar.set(Calendar.MILLISECOND, milliseconds);
             calendar.set(years, months, days, hours, minutes, value);
             Date dd = calendar.getTime();
             if (dd.getTime() >= date.getTime()) {
@@ -908,8 +906,8 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
             calendar.set(years, value, 1, 0, 0, 0);
             Month month = new Month(calendar.getTime(), this.timeZone,
                     this.locale);
-            Date standardDate = calculateDateForPosition(
-                    month, this.tickMarkPosition);
+            Date standardDate = month.calculateDateForPosition(
+                    this.tickMarkPosition);
             long millis = standardDate.getTime();
             if (millis >= date.getTime()) {
                 for (int i = 0; i < count; i++) {
@@ -918,8 +916,8 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
                 // need to peg the month in case the time zone isn't the
                 // default - see bug 2078057
                 month.peg(Calendar.getInstance(this.timeZone));
-                standardDate = calculateDateForPosition(
-                        month, this.tickMarkPosition);
+                standardDate = month.calculateDateForPosition(
+                        this.tickMarkPosition);
             }
             return standardDate;
         }
@@ -948,31 +946,16 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
         return null;
     }
 
-    /**
-     * Returns a {@link java.util.Date} corresponding to the specified position
-     * within a {@link RegularTimePeriod}.
-     *
-     * @param period  the period.
-     * @param position  the position ({@code null} not permitted).
-     *
-     * @return A date.
-     */
-    private Date calculateDateForPosition(RegularTimePeriod period,
-            DateTickMarkPosition position) {
-        Args.nullNotPermitted(period, "period");
-        Date result = null;
-        if (position == DateTickMarkPosition.START) {
-            result = new Date(period.getFirstMillisecond());
-        }
-        else if (position == DateTickMarkPosition.MIDDLE) {
-            result = new Date(period.getMiddleMillisecond());
-        }
-        else if (position == DateTickMarkPosition.END) {
-            result = new Date(period.getLastMillisecond());
-        }
-        return result;
-
-    }
+	private int milliseconds(int milliseconds) {
+		if (this.tickMarkPosition == DateTickMarkPosition.START) {
+			milliseconds = 0;
+		} else if (this.tickMarkPosition == DateTickMarkPosition.MIDDLE) {
+			milliseconds = 500;
+		} else {
+			milliseconds = 999;
+		}
+		return milliseconds;
+	}
 
     /**
      * Returns the first "standard" date (based on the specified field and
@@ -1429,11 +1412,9 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
             DateTickMarkPosition position) {
         Date result = time;
         if (unit.getUnitType().equals(DateTickUnitType.MONTH)) {
-            result = calculateDateForPosition(new Month(time, this.timeZone,
-                    this.locale), position);
+            result = new Month(time, this.timeZone, this.locale).calculateDateForPosition(position);
         } else if (unit.getUnitType().equals(DateTickUnitType.YEAR)) {
-            result = calculateDateForPosition(new Year(time, this.timeZone,
-                    this.locale), position);
+            result = new Year(time, this.timeZone, this.locale).calculateDateForPosition(position);
         }
         return result;
     }
@@ -1725,31 +1706,29 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
      */
     @Override
     public void zoomRange(double lowerPercent, double upperPercent) {
-        double start = this.timeline.toTimelineValue(
-                (long) getRange().getLowerBound());
-        double end = this.timeline.toTimelineValue(
-                (long) getRange().getUpperBound());
-        double length = end - start;
-        Range adjusted;
-        long adjStart, adjEnd;
-        if (isInverted()) {
-            adjStart = (long) (start + (length * (1 - upperPercent)));
-            adjEnd = (long) (start + (length * (1 - lowerPercent)));
-        }
-        else {
-            adjStart = (long) (start + length * lowerPercent);
-            adjEnd = (long) (start + length * upperPercent);
-        }
-        // when zooming to sub-millisecond ranges, it can be the case that
-        // adjEnd == adjStart...and we can't have an axis with zero length
-        // so we apply this instead:
-        if (adjEnd <= adjStart) {
-            adjEnd = adjStart + 1L;
-        } 
-        adjusted = new DateRange(this.timeline.toMillisecond(adjStart),
-               this.timeline.toMillisecond(adjEnd));
-        setRange(adjusted);
+        Range adjusted = adjusted(lowerPercent, upperPercent);
+		setRange(adjusted);
     }
+
+	private Range adjusted(double lowerPercent, double upperPercent) {
+		double start = this.timeline.toTimelineValue((long) getRange().getLowerBound());
+		double end = this.timeline.toTimelineValue((long) getRange().getUpperBound());
+		double length = end - start;
+		Range adjusted;
+		long adjStart, adjEnd;
+		if (isInverted()) {
+			adjStart = (long) (start + (length * (1 - upperPercent)));
+			adjEnd = (long) (start + (length * (1 - lowerPercent)));
+		} else {
+			adjStart = (long) (start + length * lowerPercent);
+			adjEnd = (long) (start + length * upperPercent);
+		}
+		if (adjEnd <= adjStart) {
+			adjEnd = adjStart + 1L;
+		}
+		adjusted = new DateRange(this.timeline.toMillisecond(adjStart), this.timeline.toMillisecond(adjEnd));
+		return adjusted;
+	}
 
     /**
      * Tests this axis for equality with an arbitrary object.

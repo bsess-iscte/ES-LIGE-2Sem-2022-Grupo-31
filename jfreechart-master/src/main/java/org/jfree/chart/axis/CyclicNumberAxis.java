@@ -112,7 +112,9 @@ A Cyclic item renderer is provided to do exactly this.
  */
 public class CyclicNumberAxis extends NumberAxis {
 
-    /** For serialization. */
+    private transient CyclicNumberAxisProduct cyclicNumberAxisProduct = new CyclicNumberAxisProduct();
+
+	/** For serialization. */
     static final long serialVersionUID = -7514160997164582554L;
 
     /** The default axis line stroke. */
@@ -132,12 +134,6 @@ public class CyclicNumberAxis extends NumberAxis {
 
     /** A flag that controls whether or not the advance line is visible. */
     protected boolean advanceLineVisible;
-
-    /** The advance line stroke. */
-    protected transient Stroke advanceLineStroke = DEFAULT_ADVANCE_LINE_STROKE;
-
-    /** The advance line paint. */
-    protected transient Paint advanceLinePaint;
 
     private transient boolean internalMarkerWhenTicksOverlap;
     private transient Tick internalMarkerCycleBoundTick;
@@ -184,7 +180,7 @@ public class CyclicNumberAxis extends NumberAxis {
         this.offset = offset;
         setFixedAutoRange(period);
         this.advanceLineVisible = true;
-        this.advanceLinePaint = DEFAULT_ADVANCE_LINE_PAINT;
+        cyclicNumberAxisProduct.setAdvanceLinePaint2(DEFAULT_ADVANCE_LINE_PAINT);
     }
 
     /**
@@ -214,7 +210,7 @@ public class CyclicNumberAxis extends NumberAxis {
      * @return The paint (never {@code null}).
      */
     public Paint getAdvanceLinePaint() {
-        return this.advanceLinePaint;
+        return this.cyclicNumberAxisProduct.getAdvanceLinePaint();
     }
 
     /**
@@ -224,8 +220,7 @@ public class CyclicNumberAxis extends NumberAxis {
      * @param paint  the paint ({@code null} not permitted).
      */
     public void setAdvanceLinePaint(Paint paint) {
-        Args.nullNotPermitted(paint, "paint");
-        this.advanceLinePaint = paint;
+        cyclicNumberAxisProduct.setAdvanceLinePaint(paint);
     }
 
     /**
@@ -235,7 +230,7 @@ public class CyclicNumberAxis extends NumberAxis {
      * @return The stroke (never {@code null}).
      */
     public Stroke getAdvanceLineStroke() {
-        return this.advanceLineStroke;
+        return this.cyclicNumberAxisProduct.getAdvanceLineStroke();
     }
     /**
      * The advance line is the line drawn at the limit of the current cycle,
@@ -244,8 +239,7 @@ public class CyclicNumberAxis extends NumberAxis {
      * @param stroke  the stroke ({@code null} not permitted).
      */
     public void setAdvanceLineStroke(Stroke stroke) {
-        Args.nullNotPermitted(stroke, "stroke");
-        this.advanceLineStroke = stroke;
+        cyclicNumberAxisProduct.setAdvanceLineStroke(stroke);
     }
 
     /**
@@ -1061,37 +1055,34 @@ public class CyclicNumberAxis extends NumberAxis {
     public AxisSpace reserveSpace(Graphics2D g2, Plot plot,
             Rectangle2D plotArea, RectangleEdge edge, AxisSpace space) {
 
-        this.internalMarkerCycleBoundTick = null;
-        AxisSpace ret = super.reserveSpace(g2, plot, plotArea, edge, space);
+        space(g2, edge, space);
+		AxisSpace ret = super.reserveSpace(g2, plot, plotArea, edge, space);
         if (this.internalMarkerCycleBoundTick == null) {
             return ret;
-        }
-
-        FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
-        Rectangle2D r = TextUtils.getTextBounds(
-            this.internalMarkerCycleBoundTick.getText(), g2, fm
-        );
-
-        if (RectangleEdge.isTopOrBottom(edge)) {
-            if (isVerticalTickLabels()) {
-                space.add(r.getHeight() / 2, RectangleEdge.RIGHT);
-            }
-            else {
-                space.add(r.getWidth() / 2, RectangleEdge.RIGHT);
-            }
-        }
-        else if (RectangleEdge.isLeftOrRight(edge)) {
-            if (isVerticalTickLabels()) {
-                space.add(r.getWidth() / 2, RectangleEdge.TOP);
-            }
-            else {
-                space.add(r.getHeight() / 2, RectangleEdge.TOP);
-            }
         }
 
         return ret;
 
     }
+
+	private void space(Graphics2D g2, RectangleEdge edge, AxisSpace space) {
+		this.internalMarkerCycleBoundTick = null;
+		FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
+		Rectangle2D r = TextUtils.getTextBounds(this.internalMarkerCycleBoundTick.getText(), g2, fm);
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			if (isVerticalTickLabels()) {
+				space.add(r.getHeight() / 2, RectangleEdge.RIGHT);
+			} else {
+				space.add(r.getWidth() / 2, RectangleEdge.RIGHT);
+			}
+		} else if (RectangleEdge.isLeftOrRight(edge)) {
+			if (isVerticalTickLabels()) {
+				space.add(r.getWidth() / 2, RectangleEdge.TOP);
+			} else {
+				space.add(r.getHeight() / 2, RectangleEdge.TOP);
+			}
+		}
+	}
 
     /**
      * Provides serialization support.
@@ -1102,8 +1093,9 @@ public class CyclicNumberAxis extends NumberAxis {
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
-        SerialUtils.writePaint(this.advanceLinePaint, stream);
-        SerialUtils.writeStroke(this.advanceLineStroke, stream);
+		stream.writeObject(this.cyclicNumberAxisProduct);
+        SerialUtils.writePaint(this.cyclicNumberAxisProduct.getAdvanceLinePaint(), stream);
+        SerialUtils.writeStroke(this.cyclicNumberAxisProduct.getAdvanceLineStroke(), stream);
     }
 
     /**
@@ -1117,8 +1109,9 @@ public class CyclicNumberAxis extends NumberAxis {
     private void readObject(ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
-        this.advanceLinePaint = SerialUtils.readPaint(stream);
-        this.advanceLineStroke = SerialUtils.readStroke(stream);
+		this.cyclicNumberAxisProduct = (CyclicNumberAxisProduct) stream.readObject();
+        cyclicNumberAxisProduct.setAdvanceLinePaint2(SerialUtils.readPaint(stream));
+        cyclicNumberAxisProduct.setAdvanceLineStroke2(SerialUtils.readStroke(stream));
     }
 
 
@@ -1147,11 +1140,11 @@ public class CyclicNumberAxis extends NumberAxis {
         if (this.offset != that.offset) {
             return false;
         }
-        if (!PaintUtils.equal(this.advanceLinePaint,
-                that.advanceLinePaint)) {
+        if (!PaintUtils.equal(this.cyclicNumberAxisProduct.getAdvanceLinePaint(),
+                that.cyclicNumberAxisProduct.getAdvanceLinePaint())) {
             return false;
         }
-        if (!Objects.equals(this.advanceLineStroke, that.advanceLineStroke)) {
+        if (!Objects.equals(this.cyclicNumberAxisProduct.getAdvanceLineStroke(), that.cyclicNumberAxisProduct.getAdvanceLineStroke())) {
             return false;
         }
         if (this.advanceLineVisible != that.advanceLineVisible) {
@@ -1162,4 +1155,10 @@ public class CyclicNumberAxis extends NumberAxis {
         }
         return true;
     }
+
+	public Object clone() throws java.lang.CloneNotSupportedException {
+		CyclicNumberAxis clone = (CyclicNumberAxis) super.clone();
+		clone.cyclicNumberAxisProduct = (CyclicNumberAxisProduct) this.cyclicNumberAxisProduct.clone();
+		return clone;
+	}
 }

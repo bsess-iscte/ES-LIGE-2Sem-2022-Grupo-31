@@ -295,13 +295,8 @@ public class XYTitleAnnotation extends AbstractXYAnnotation
         xx = xx - (float) anchorPoint.getX();
         yy = yy - (float) anchorPoint.getY();
         titleRect.setRect(xx, yy, titleRect.getWidth(), titleRect.getHeight());
-        BlockParams p = new BlockParams();
-        if (info != null) {
-            if (info.getOwner().getEntityCollection() != null) {
-                p.setGenerateEntities(true);
-            }
-        }
-        Object result = this.title.draw(g2, titleRect, p);
+        BlockParams p = p(info);
+		Object result = this.title.draw(g2, titleRect, p);
         if (info != null) {
             if (result instanceof EntityBlockResult) {
                 EntityBlockResult ebr = (EntityBlockResult) result;
@@ -317,6 +312,16 @@ public class XYTitleAnnotation extends AbstractXYAnnotation
             }
         }
     }
+
+	private BlockParams p(PlotRenderingInfo info) {
+		BlockParams p = new BlockParams();
+		if (info != null) {
+			if (info.getOwner().getEntityCollection() != null) {
+				p.setGenerateEntities(true);
+			}
+		}
+		return p;
+	}
 
     /**
      * Tests this object for equality with an arbitrary object.

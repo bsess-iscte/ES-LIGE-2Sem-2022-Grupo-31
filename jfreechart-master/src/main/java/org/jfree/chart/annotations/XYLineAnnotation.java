@@ -210,37 +210,9 @@ public class XYLineAnnotation extends AbstractXYAnnotation
                      int rendererIndex,
                      PlotRenderingInfo info) {
 
-        PlotOrientation orientation = plot.getOrientation();
-        RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
-                plot.getDomainAxisLocation(), orientation);
-        RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(
-                plot.getRangeAxisLocation(), orientation);
-        float j2DX1 = 0.0f;
-        float j2DX2 = 0.0f;
-        float j2DY1 = 0.0f;
-        float j2DY2 = 0.0f;
-        if (orientation == PlotOrientation.VERTICAL) {
-            j2DX1 = (float) domainAxis.valueToJava2D(this.x1, dataArea,
-                    domainEdge);
-            j2DY1 = (float) rangeAxis.valueToJava2D(this.y1, dataArea,
-                    rangeEdge);
-            j2DX2 = (float) domainAxis.valueToJava2D(this.x2, dataArea,
-                    domainEdge);
-            j2DY2 = (float) rangeAxis.valueToJava2D(this.y2, dataArea,
-                    rangeEdge);
-        } else if (orientation == PlotOrientation.HORIZONTAL) {
-            j2DY1 = (float) domainAxis.valueToJava2D(this.x1, dataArea,
-                    domainEdge);
-            j2DX1 = (float) rangeAxis.valueToJava2D(this.y1, dataArea,
-                    rangeEdge);
-            j2DY2 = (float) domainAxis.valueToJava2D(this.x2, dataArea,
-                    domainEdge);
-            j2DX2 = (float) rangeAxis.valueToJava2D(this.y2, dataArea,
-                    rangeEdge);
-        }
-        g2.setPaint(this.paint);
+        Line2D line = line(plot, dataArea, domainAxis, rangeAxis);
+		g2.setPaint(this.paint);
         g2.setStroke(this.stroke);
-        Line2D line = new Line2D.Float(j2DX1, j2DY1, j2DX2, j2DY2);
         // line is clipped to avoid JRE bug 6574155, for more info
         // see JFreeChart bug 2221495
         boolean visible = LineUtils.clipLine(line, dataArea);
@@ -255,6 +227,29 @@ public class XYLineAnnotation extends AbstractXYAnnotation
                     rendererIndex, toolTip, url);
         }
     }
+
+	private Line2D line(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		float j2DX1 = 0.0f;
+		float j2DX2 = 0.0f;
+		float j2DY1 = 0.0f;
+		float j2DY2 = 0.0f;
+		if (orientation == PlotOrientation.VERTICAL) {
+			j2DX1 = (float) domainAxis.valueToJava2D(this.x1, dataArea, domainEdge);
+			j2DY1 = (float) rangeAxis.valueToJava2D(this.y1, dataArea, rangeEdge);
+			j2DX2 = (float) domainAxis.valueToJava2D(this.x2, dataArea, domainEdge);
+			j2DY2 = (float) rangeAxis.valueToJava2D(this.y2, dataArea, rangeEdge);
+		} else if (orientation == PlotOrientation.HORIZONTAL) {
+			j2DY1 = (float) domainAxis.valueToJava2D(this.x1, dataArea, domainEdge);
+			j2DX1 = (float) rangeAxis.valueToJava2D(this.y1, dataArea, rangeEdge);
+			j2DY2 = (float) domainAxis.valueToJava2D(this.x2, dataArea, domainEdge);
+			j2DX2 = (float) rangeAxis.valueToJava2D(this.y2, dataArea, rangeEdge);
+		}
+		Line2D line = new Line2D.Float(j2DX1, j2DY1, j2DX2, j2DY2);
+		return line;
+	}
 
     /**
      * Tests this object for equality with an arbitrary object.

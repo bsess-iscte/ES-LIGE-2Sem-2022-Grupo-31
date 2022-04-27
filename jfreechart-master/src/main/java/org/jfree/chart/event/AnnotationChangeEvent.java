@@ -61,13 +61,4 @@ public class AnnotationChangeEvent extends ChartChangeEvent {
         this.annotation = annotation;
     }
 
-    /**
-     * Returns the annotation that triggered the event.
-     *
-     * @return The annotation that triggered the event (never {@code null}).
-     */
-    public Annotation getAnnotation() {
-        return this.annotation;
-    }
-
 }

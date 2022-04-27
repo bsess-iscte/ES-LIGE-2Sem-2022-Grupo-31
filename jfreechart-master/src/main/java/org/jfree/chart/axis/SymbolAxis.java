@@ -69,7 +69,9 @@ import org.jfree.data.Range;
  */
 public class SymbolAxis extends NumberAxis implements Serializable {
 
-    /** For serialization. */
+    private SymbolAxisProduct symbolAxisProduct = new SymbolAxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 7216330468770619716L;
 
     /** The default grid band paint. */
@@ -81,9 +83,6 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      */
     public static final Paint DEFAULT_GRID_BAND_ALTERNATE_PAINT
             = new Color(0, 0, 0, 0);  // transparent
-
-    /** The list of symbols to display instead of the numeric values. */
-    private List symbols;
 
     /** Flag that indicates whether or not grid bands are visible. */
     private boolean gridBandsVisible;
@@ -106,7 +105,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      */
     public SymbolAxis(String label, String[] sv) {
         super(label);
-        this.symbols = Arrays.asList(sv);
+        symbolAxisProduct.setSymbols(Arrays.asList(sv));
         this.gridBandsVisible = true;
         this.gridBandPaint = DEFAULT_GRID_BAND_PAINT;
         this.gridBandAlternatePaint = DEFAULT_GRID_BAND_ALTERNATE_PAINT;
@@ -120,9 +119,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      * @return The symbols.
      */
     public String[] getSymbols() {
-        String[] result = new String[this.symbols.size()];
-        result = (String[]) this.symbols.toArray(result);
-        return result;
+        return symbolAxisProduct.getSymbols();
     }
 
     /**
@@ -304,7 +301,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
 
         boolean currentGridBandIsDark = firstGridBandIsDark;
         double yy = dataArea.getY();
-        double xx1, xx2;
+        double xx1 = 0, xx2 = 0;
 
         //gets the outline stroke width of the plot
         double outlineStrokeWidth = 1.0;
@@ -314,26 +311,29 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         }
 
         Iterator iterator = ticks.iterator();
-        ValueTick tick;
-        Rectangle2D band;
+        ValueTick tick = null;
+        Rectangle2D band = null;
         while (iterator.hasNext()) {
-            tick = (ValueTick) iterator.next();
-            xx1 = valueToJava2D(tick.getValue() - 0.5d, dataArea,
-                    RectangleEdge.BOTTOM);
-            xx2 = valueToJava2D(tick.getValue() + 0.5d, dataArea,
-                    RectangleEdge.BOTTOM);
-            if (currentGridBandIsDark) {
+            band = band(dataArea, yy, xx1, xx2, outlineStrokeWidth, iterator, tick, band);
+			if (currentGridBandIsDark) {
                 g2.setPaint(this.gridBandPaint);
             } else {
                 g2.setPaint(this.gridBandAlternatePaint);
             }
-            band = new Rectangle2D.Double(Math.min(xx1, xx2), 
-                    yy + outlineStrokeWidth, Math.abs(xx2 - xx1), 
-                    dataArea.getMaxY() - yy - outlineStrokeWidth);
             g2.fill(band);
             currentGridBandIsDark = !currentGridBandIsDark;
         }
     }
+
+	private Rectangle2D band(Rectangle2D dataArea, double yy, double xx1, double xx2, double outlineStrokeWidth,
+			Iterator iterator, ValueTick tick, Rectangle2D band) {
+		tick = (ValueTick) iterator.next();
+		xx1 = valueToJava2D(tick.getValue() - 0.5d, dataArea, RectangleEdge.BOTTOM);
+		xx2 = valueToJava2D(tick.getValue() + 0.5d, dataArea, RectangleEdge.BOTTOM);
+		band = new Rectangle2D.Double(Math.min(xx1, xx2), yy + outlineStrokeWidth, Math.abs(xx2 - xx1),
+				dataArea.getMaxY() - yy - outlineStrokeWidth);
+		return band;
+	}
 
     /**
      * Draws the grid bands for an axis that is aligned to the left or
@@ -357,14 +357,8 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         double xx = dataArea.getX();
         double yy1, yy2;
 
-        //gets the outline stroke width of the plot
-        double outlineStrokeWidth = 1.0;
-        Stroke outlineStroke = getPlot().getOutlineStroke();
-        if (outlineStroke != null && outlineStroke instanceof BasicStroke) {
-            outlineStrokeWidth = ((BasicStroke) outlineStroke).getLineWidth();
-        }
-
-        Iterator iterator = ticks.iterator();
+        double outlineStrokeWidth = outlineStrokeWidth();
+		Iterator iterator = ticks.iterator();
         ValueTick tick;
         Rectangle2D band;
         while (iterator.hasNext()) {
@@ -386,6 +380,15 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         }
     }
 
+	private double outlineStrokeWidth() {
+		double outlineStrokeWidth = 1.0;
+		Stroke outlineStroke = getPlot().getOutlineStroke();
+		if (outlineStroke != null && outlineStroke instanceof BasicStroke) {
+			outlineStrokeWidth = ((BasicStroke) outlineStroke).getLineWidth();
+		}
+		return outlineStrokeWidth;
+	}
+
     /**
      * Rescales the axis to ensure that all data is visible.
      */
@@ -399,7 +402,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         if (plot instanceof ValueAxisPlot) {
 
             // ensure that all the symbols are displayed
-            double upper = this.symbols.size() - 1;
+            double upper = this.symbolAxisProduct.getSymbols2().size() - 1;
             double lower = 0;
             double range = upper - lower;
 
@@ -510,7 +513,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
                     tickLabel = formatter.format(currentTickValue);
                 }
                 else {
-                    tickLabel = valueToString(currentTickValue);
+                    tickLabel = symbolAxisProduct.valueToString(currentTickValue);
                 }
 
                 // avoid to draw overlapping tick labels
@@ -604,7 +607,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
                     tickLabel = formatter.format(currentTickValue);
                 }
                 else {
-                    tickLabel = valueToString(currentTickValue);
+                    tickLabel = symbolAxisProduct.valueToString(currentTickValue);
                 }
 
                 // avoid to draw overlapping tick labels
@@ -670,14 +673,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      * @return The symbol.
      */
     public String valueToString(double value) {
-        String strToReturn;
-        try {
-            strToReturn = (String) this.symbols.get((int) value);
-        }
-        catch (IndexOutOfBoundsException  ex) {
-            strToReturn = "";
-        }
-        return strToReturn;
+        return symbolAxisProduct.valueToString(value);
     }
 
     /**
@@ -696,7 +692,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
             return false;
         }
         SymbolAxis that = (SymbolAxis) obj;
-        if (!this.symbols.equals(that.symbols)) {
+        if (!this.symbolAxisProduct.getSymbols2().equals(that.symbolAxisProduct.getSymbols2())) {
             return false;
         }
         if (this.gridBandsVisible != that.gridBandsVisible) {
@@ -739,5 +735,11 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         this.gridBandPaint = SerialUtils.readPaint(stream);
         this.gridBandAlternatePaint = SerialUtils.readPaint(stream);
     }
+
+	public Object clone() throws java.lang.CloneNotSupportedException {
+		SymbolAxis clone = (SymbolAxis) super.clone();
+		clone.symbolAxisProduct = (SymbolAxisProduct) this.symbolAxisProduct.clone();
+		return clone;
+	}
 
 }

@@ -42,8 +42,9 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
-
+import org.jfree.chart.axis.DateTickMarkPosition;
 import org.jfree.chart.date.MonthConstants;
+import org.jfree.chart.internal.Args;
 
 /**
  * An abstract class representing a unit of time.  Convenient methods are
@@ -385,5 +386,23 @@ public abstract class RegularTimePeriod implements TimePeriod, Comparable,
     public String toString() {
         return String.valueOf(getStart());
     }
+
+	/**
+	 * Returns a  {@link java.util.Date}  corresponding to the specified position within a  {@link RegularTimePeriod} .
+	 * @param position   the position ( {@code  null}  not permitted).
+	 * @return  A date.
+	 */
+	public Date calculateDateForPosition(DateTickMarkPosition position) {
+		Args.nullNotPermitted(this, "period");
+		Date result = null;
+		if (position == DateTickMarkPosition.START) {
+			result = new Date(getFirstMillisecond());
+		} else if (position == DateTickMarkPosition.MIDDLE) {
+			result = new Date(getMiddleMillisecond());
+		} else if (position == DateTickMarkPosition.END) {
+			result = new Date(getLastMillisecond());
+		}
+		return result;
+	}
 
 }

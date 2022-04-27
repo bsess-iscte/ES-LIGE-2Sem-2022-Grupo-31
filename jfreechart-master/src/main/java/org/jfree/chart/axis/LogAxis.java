@@ -67,24 +67,14 @@ import org.jfree.data.Range;
  */
 public class LogAxis extends ValueAxis {
 
-    /** The logarithm base. */
+    private LogAxisProduct logAxisProduct = new LogAxisProduct();
+
+	/** The logarithm base. */
     private double base = 10.0;
 
     /** The logarithm of the base value - cached for performance. */
     private double baseLog = Math.log(10.0);
 
-    /** 
-     * The base symbol to display (if {@code null} then the numerical
-     * value of the base is displayed).
-     */
-    private String baseSymbol = null;
-    
-    /** 
-     * The formatter to use for the base value when the base is displayed
-     * as a numerical value.
-     */
-    private Format baseFormatter = new DecimalFormat("0");
-    
     /**  The smallest value permitted on the axis. */
     private double smallestValue = 1E-100;
 
@@ -149,7 +139,7 @@ public class LogAxis extends ValueAxis {
      * @return The base symbol (possibly {@code null}).
      */
     public String getBaseSymbol() {
-        return this.baseSymbol;
+        return this.logAxisProduct.getBaseSymbol();
     }
     
     /**
@@ -159,8 +149,7 @@ public class LogAxis extends ValueAxis {
      * @param symbol  the symbol ({@code null} permitted).
      */
     public void setBaseSymbol(String symbol) {
-        this.baseSymbol = symbol;
-        fireChangeEvent();
+        logAxisProduct.setBaseSymbol(symbol, this);
     }
     
     /**
@@ -171,7 +160,7 @@ public class LogAxis extends ValueAxis {
      * @return The base formatter (never {@code null}).
      */
     public Format getBaseFormatter() {
-        return this.baseFormatter;
+        return this.logAxisProduct.getBaseFormatter();
     }
     
     /**
@@ -182,9 +171,7 @@ public class LogAxis extends ValueAxis {
      * @param formatter  the formatter ({@code null} not permitted).
      */
     public void setBaseFormatter(Format formatter) {
-        Args.nullNotPermitted(formatter, "formatter");
-        this.baseFormatter = formatter;
-        fireChangeEvent();
+        logAxisProduct.setBaseFormatter(formatter, this);
     }
     
     /**
@@ -798,9 +785,9 @@ public class LogAxis extends ValueAxis {
             as.addAttribute(TextAttribute.FONT, getTickLabelFont());
             return as;
         } else {
-            String baseStr = this.baseSymbol;
+            String baseStr = this.logAxisProduct.getBaseSymbol();
             if (baseStr == null) {
-                baseStr = this.baseFormatter.format(this.base);
+                baseStr = this.logAxisProduct.getBaseFormatter().format(this.base);
             }
             double logy = calculateLog(value);
             String exponentStr = getTickUnit().valueToString(logy);
@@ -1002,10 +989,10 @@ public class LogAxis extends ValueAxis {
         if (this.base != that.base) {
             return false;
         }
-        if (!Objects.equals(this.baseSymbol, that.baseSymbol)) {
+        if (!Objects.equals(this.logAxisProduct.getBaseSymbol(), that.logAxisProduct.getBaseSymbol())) {
             return false;
         }
-        if (!this.baseFormatter.equals(that.baseFormatter)) {
+        if (!this.logAxisProduct.getBaseFormatter().equals(that.logAxisProduct.getBaseFormatter())) {
             return false;
         }
         if (this.smallestValue != that.smallestValue) {
@@ -1035,5 +1022,11 @@ public class LogAxis extends ValueAxis {
         result = 37 * result + this.tickUnit.hashCode();
         return result;
     }
+
+	public Object clone() throws java.lang.CloneNotSupportedException {
+		LogAxis clone = (LogAxis) super.clone();
+		clone.logAxisProduct = (LogAxisProduct) this.logAxisProduct.clone();
+		return clone;
+	}
 
 }
