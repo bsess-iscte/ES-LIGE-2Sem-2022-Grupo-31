@@ -28,8 +28,12 @@
 
 package org.jfree.chart.block;
 
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import org.jfree.chart.api.HorizontalAlignment;
 import org.jfree.chart.api.PublicCloneable;
+import org.jfree.chart.api.VerticalAlignment;
+import org.jfree.chart.internal.Args;
 
 /**
  * A simple class for representing the dimensions of an object.  It would be
@@ -162,5 +166,47 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+	/**
+	 * Creates a rectangle that is aligned to the frame.
+	 * @param frame   the frame to align to.
+	 * @param hAlign   the horizontal alignment ( {@code  null}  not permitted).
+	 * @param vAlign   the vertical alignment ( {@code  null}  not permitted).
+	 * @return  A rectangle.
+	 */
+	public Rectangle2D createAlignedRectangle2D(Rectangle2D frame, HorizontalAlignment hAlign,
+			VerticalAlignment vAlign) {
+		Args.nullNotPermitted(hAlign, "hAlign");
+		Args.nullNotPermitted(vAlign, "vAlign");
+		double x = Double.NaN;
+		double y = Double.NaN;
+		switch (hAlign) {
+		case LEFT:
+			x = frame.getX();
+			break;
+		case CENTER:
+			x = frame.getCenterX() - (this.width / 2.0);
+			break;
+		case RIGHT:
+			x = frame.getMaxX() - this.width;
+			break;
+		default:
+			throw new IllegalStateException("Unexpected enum value " + hAlign);
+		}
+		switch (vAlign) {
+		case TOP:
+			y = frame.getY();
+			break;
+		case CENTER:
+			y = frame.getCenterY() - (this.height / 2.0);
+			break;
+		case BOTTOM:
+			y = frame.getMaxY() - this.height;
+			break;
+		default:
+			throw new IllegalStateException("Unexpected enum value " + hAlign);
+		}
+		return new Rectangle2D.Double(x, y, this.width, this.height);
+	}
     
 }

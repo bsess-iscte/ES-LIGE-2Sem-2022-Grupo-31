@@ -3056,4 +3056,16 @@ public abstract class AbstractRenderer implements ChartElement, Cloneable, Seria
         this.listenerList = new EventListenerList();
     }
 
+	/**
+	 * Applies the attributes for this theme to an  {@link AbstractRenderer} .
+	 */
+	public void applyToAbstractRenderer() {
+		if (getAutoPopulateSeriesPaint()) {
+			clearSeriesPaints(false);
+		}
+		if (getAutoPopulateSeriesStroke()) {
+			clearSeriesStrokes(false);
+		}
+	}
+
 }
