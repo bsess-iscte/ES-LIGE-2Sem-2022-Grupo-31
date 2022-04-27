@@ -192,10 +192,10 @@ public class XYImageAnnotation extends AbstractXYAnnotation
             xx = j2DX;
             yy = j2DY;
         }
-        int w = this.image.getWidth(null);
+        Rectangle2D imageRect = imageRect();
+		int w = this.image.getWidth(null);
         int h = this.image.getHeight(null);
 
-        Rectangle2D imageRect = new Rectangle2D.Double(0, 0, w, h);
         Point2D anchorPoint = this.anchor.getAnchorPoint(imageRect);
         xx = xx - (float) anchorPoint.getX();
         yy = yy - (float) anchorPoint.getY();
@@ -208,6 +208,13 @@ public class XYImageAnnotation extends AbstractXYAnnotation
                     toolTip, url);
         }
     }
+
+	private Rectangle2D imageRect() {
+		int w = this.image.getWidth(null);
+		int h = this.image.getHeight(null);
+		Rectangle2D imageRect = new Rectangle2D.Double(0, 0, w, h);
+		return imageRect;
+	}
 
     /**
      * Tests this object for equality with an arbitrary object.

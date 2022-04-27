@@ -285,12 +285,12 @@ public class CategoryLineAnnotation extends AbstractAnnotation
     public void draw(Graphics2D g2, CategoryPlot plot, Rectangle2D dataArea,
                      CategoryAxis domainAxis, ValueAxis rangeAxis) {
 
-        CategoryDataset dataset = plot.getDataset();
+        double lineX1 = lineX1(plot, dataArea, domainAxis, rangeAxis);
+		CategoryDataset dataset = plot.getDataset();
         int catIndex1 = dataset.getColumnIndex(this.category1);
         int catIndex2 = dataset.getColumnIndex(this.category2);
         int catCount = dataset.getColumnCount();
 
-        double lineX1 = 0.0f;
         double lineY1 = 0.0f;
         double lineX2 = 0.0f;
         double lineY2 = 0.0f;
@@ -304,15 +304,11 @@ public class CategoryLineAnnotation extends AbstractAnnotation
             lineY1 = domainAxis.getCategoryJava2DCoordinate(
                 CategoryAnchor.MIDDLE, catIndex1, catCount, dataArea,
                 domainEdge);
-            lineX1 = rangeAxis.valueToJava2D(this.value1, dataArea, rangeEdge);
             lineY2 = domainAxis.getCategoryJava2DCoordinate(
                 CategoryAnchor.MIDDLE, catIndex2, catCount, dataArea,
                 domainEdge);
             lineX2 = rangeAxis.valueToJava2D(this.value2, dataArea, rangeEdge);
         } else if (orientation == PlotOrientation.VERTICAL) {
-            lineX1 = domainAxis.getCategoryJava2DCoordinate(
-                CategoryAnchor.MIDDLE, catIndex1, catCount, dataArea,
-                domainEdge);
             lineY1 = rangeAxis.valueToJava2D(this.value1, dataArea, rangeEdge);
             lineX2 = domainAxis.getCategoryJava2DCoordinate(
                 CategoryAnchor.MIDDLE, catIndex2, catCount, dataArea,
@@ -323,6 +319,23 @@ public class CategoryLineAnnotation extends AbstractAnnotation
         g2.setStroke(this.stroke);
         g2.drawLine((int) lineX1, (int) lineY1, (int) lineX2, (int) lineY2);
     }
+
+	private double lineX1(CategoryPlot plot, Rectangle2D dataArea, CategoryAxis domainAxis, ValueAxis rangeAxis) {
+		CategoryDataset dataset = plot.getDataset();
+		int catIndex1 = dataset.getColumnIndex(this.category1);
+		int catCount = dataset.getColumnCount();
+		double lineX1 = 0.0f;
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			lineX1 = rangeAxis.valueToJava2D(this.value1, dataArea, rangeEdge);
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			lineX1 = domainAxis.getCategoryJava2DCoordinate(CategoryAnchor.MIDDLE, catIndex1, catCount, dataArea,
+					domainEdge);
+		}
+		return lineX1;
+	}
 
     /**
      * Tests this object for equality with another.

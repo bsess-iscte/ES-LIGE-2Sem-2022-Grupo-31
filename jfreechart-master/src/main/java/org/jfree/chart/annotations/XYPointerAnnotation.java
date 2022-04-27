@@ -363,7 +363,9 @@ public class XYPointerAnnotation extends XYTextAnnotation
             ValueAxis domainAxis, ValueAxis rangeAxis, int rendererIndex, 
             PlotRenderingInfo info) {
 
-        PlotOrientation orientation = plot.getOrientation();
+        GeneralPath arrow = arrow(plot, dataArea, domainAxis, rangeAxis);
+		Line2D line = line(plot, dataArea, domainAxis, rangeAxis);
+		PlotOrientation orientation = plot.getOrientation();
         RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
                 plot.getDomainAxisLocation(), orientation);
         RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(
@@ -375,34 +377,8 @@ public class XYPointerAnnotation extends XYTextAnnotation
             j2DX = j2DY;
             j2DY = temp;
         }
-        double startX = j2DX + Math.cos(this.angle) * this.baseRadius;
-        double startY = j2DY + Math.sin(this.angle) * this.baseRadius;
-
-        double endX = j2DX + Math.cos(this.angle) * this.tipRadius;
-        double endY = j2DY + Math.sin(this.angle) * this.tipRadius;
-
-        double arrowBaseX = endX + Math.cos(this.angle) * this.arrowLength;
-        double arrowBaseY = endY + Math.sin(this.angle) * this.arrowLength;
-
-        double arrowLeftX = arrowBaseX
-                + Math.cos(this.angle + Math.PI / 2.0) * this.arrowWidth;
-        double arrowLeftY = arrowBaseY
-                + Math.sin(this.angle + Math.PI / 2.0) * this.arrowWidth;
-
-        double arrowRightX = arrowBaseX
-                - Math.cos(this.angle + Math.PI / 2.0) * this.arrowWidth;
-        double arrowRightY = arrowBaseY
-                - Math.sin(this.angle + Math.PI / 2.0) * this.arrowWidth;
-
-        GeneralPath arrow = new GeneralPath();
-        arrow.moveTo((float) endX, (float) endY);
-        arrow.lineTo((float) arrowLeftX, (float) arrowLeftY);
-        arrow.lineTo((float) arrowRightX, (float) arrowRightY);
-        arrow.closePath();
-
         g2.setStroke(this.arrowStroke);
         g2.setPaint(this.arrowPaint);
-        Line2D line = new Line2D.Double(startX, startY, arrowBaseX, arrowBaseY);
         g2.draw(line);
         g2.fill(arrow);
 
@@ -436,6 +412,54 @@ public class XYPointerAnnotation extends XYTextAnnotation
         }
 
     }
+
+	private Line2D line(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		double j2DX = domainAxis.valueToJava2D(getX(), dataArea, domainEdge);
+		double j2DY = rangeAxis.valueToJava2D(getY(), dataArea, rangeEdge);
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			double temp = j2DX;
+			j2DX = j2DY;
+			j2DY = temp;
+		}
+		double startX = j2DX + Math.cos(this.angle) * this.baseRadius;
+		double startY = j2DY + Math.sin(this.angle) * this.baseRadius;
+		double endX = j2DX + Math.cos(this.angle) * this.tipRadius;
+		double endY = j2DY + Math.sin(this.angle) * this.tipRadius;
+		double arrowBaseX = endX + Math.cos(this.angle) * this.arrowLength;
+		double arrowBaseY = endY + Math.sin(this.angle) * this.arrowLength;
+		Line2D line = new Line2D.Double(startX, startY, arrowBaseX, arrowBaseY);
+		return line;
+	}
+
+	private GeneralPath arrow(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		double j2DX = domainAxis.valueToJava2D(getX(), dataArea, domainEdge);
+		double j2DY = rangeAxis.valueToJava2D(getY(), dataArea, rangeEdge);
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			double temp = j2DX;
+			j2DX = j2DY;
+			j2DY = temp;
+		}
+		double endX = j2DX + Math.cos(this.angle) * this.tipRadius;
+		double endY = j2DY + Math.sin(this.angle) * this.tipRadius;
+		double arrowBaseX = endX + Math.cos(this.angle) * this.arrowLength;
+		double arrowBaseY = endY + Math.sin(this.angle) * this.arrowLength;
+		double arrowLeftX = arrowBaseX + Math.cos(this.angle + Math.PI / 2.0) * this.arrowWidth;
+		double arrowLeftY = arrowBaseY + Math.sin(this.angle + Math.PI / 2.0) * this.arrowWidth;
+		double arrowRightX = arrowBaseX - Math.cos(this.angle + Math.PI / 2.0) * this.arrowWidth;
+		double arrowRightY = arrowBaseY - Math.sin(this.angle + Math.PI / 2.0) * this.arrowWidth;
+		GeneralPath arrow = new GeneralPath();
+		arrow.moveTo((float) endX, (float) endY);
+		arrow.lineTo((float) arrowLeftX, (float) arrowLeftY);
+		arrow.lineTo((float) arrowRightX, (float) arrowRightY);
+		arrow.closePath();
+		return arrow;
+	}
 
     /**
      * Tests this annotation for equality with an arbitrary object.

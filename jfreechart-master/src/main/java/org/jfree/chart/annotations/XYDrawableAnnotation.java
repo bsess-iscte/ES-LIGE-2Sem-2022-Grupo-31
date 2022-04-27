@@ -204,14 +204,10 @@ public class XYDrawableAnnotation extends AbstractXYAnnotation
         // to a larger area and scale it down into the display area
         // afterwards, the original transform is restored
         AffineTransform savedTransform = g2.getTransform();
-        Rectangle2D drawArea = new Rectangle2D.Double(0.0, 0.0,
-                this.displayWidth * this.drawScaleFactor,
-                this.displayHeight * this.drawScaleFactor);
-
-        g2.scale(1 / this.drawScaleFactor, 1 / this.drawScaleFactor);
+        drawable(g2);
+		g2.scale(1 / this.drawScaleFactor, 1 / this.drawScaleFactor);
         g2.translate((j2DX - this.displayWidth / 2.0) * this.drawScaleFactor,
                 (j2DY - this.displayHeight / 2.0) * this.drawScaleFactor);
-        this.drawable.draw(g2, drawArea);
         g2.setTransform(savedTransform);
         String toolTip = getToolTipText();
         String url = getURL();
@@ -220,6 +216,12 @@ public class XYDrawableAnnotation extends AbstractXYAnnotation
         }
 
     }
+
+	private void drawable(Graphics2D g2) {
+		Rectangle2D drawArea = new Rectangle2D.Double(0.0, 0.0, this.displayWidth * this.drawScaleFactor,
+				this.displayHeight * this.drawScaleFactor);
+		this.drawable.draw(g2, drawArea);
+	}
 
     /**
      * Tests this annotation for equality with an arbitrary object.
