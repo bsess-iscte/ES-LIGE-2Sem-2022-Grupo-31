@@ -200,42 +200,8 @@ public class XYPolygonAnnotation extends AbstractXYAnnotation
         if (this.polygon.length < 4) {
             return;
         }
-        PlotOrientation orientation = plot.getOrientation();
-        RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
-                plot.getDomainAxisLocation(), orientation);
-        RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(
-                plot.getRangeAxisLocation(), orientation);
-
-        GeneralPath area = new GeneralPath();
-        double x = domainAxis.valueToJava2D(this.polygon[0], dataArea,
-                domainEdge);
-        double y = rangeAxis.valueToJava2D(this.polygon[1], dataArea,
-                rangeEdge);
-        if (orientation == PlotOrientation.HORIZONTAL) {
-            area.moveTo((float) y, (float) x);
-            for (int i = 2; i < this.polygon.length; i += 2) {
-                x = domainAxis.valueToJava2D(this.polygon[i], dataArea,
-                        domainEdge);
-                y = rangeAxis.valueToJava2D(this.polygon[i + 1], dataArea,
-                        rangeEdge);
-                area.lineTo((float) y, (float) x);
-            }
-            area.closePath();
-        }
-        else if (orientation == PlotOrientation.VERTICAL) {
-            area.moveTo((float) x, (float) y);
-            for (int i = 2; i < this.polygon.length; i += 2) {
-                x = domainAxis.valueToJava2D(this.polygon[i], dataArea,
-                        domainEdge);
-                y = rangeAxis.valueToJava2D(this.polygon[i + 1], dataArea,
-                        rangeEdge);
-                area.lineTo((float) x, (float) y);
-            }
-            area.closePath();
-       }
-
-
-        if (this.fillPaint != null) {
+        GeneralPath area = area(plot, dataArea, domainAxis, rangeAxis);
+		if (this.fillPaint != null) {
             g2.setPaint(this.fillPaint);
             g2.fill(area);
         }
@@ -248,6 +214,33 @@ public class XYPolygonAnnotation extends AbstractXYAnnotation
         addEntity(info, area, rendererIndex, getToolTipText(), getURL());
 
     }
+
+	private GeneralPath area(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		GeneralPath area = new GeneralPath();
+		double x = domainAxis.valueToJava2D(this.polygon[0], dataArea, domainEdge);
+		double y = rangeAxis.valueToJava2D(this.polygon[1], dataArea, rangeEdge);
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			area.moveTo((float) y, (float) x);
+			for (int i = 2; i < this.polygon.length; i += 2) {
+				x = domainAxis.valueToJava2D(this.polygon[i], dataArea, domainEdge);
+				y = rangeAxis.valueToJava2D(this.polygon[i + 1], dataArea, rangeEdge);
+				area.lineTo((float) y, (float) x);
+			}
+			area.closePath();
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			area.moveTo((float) x, (float) y);
+			for (int i = 2; i < this.polygon.length; i += 2) {
+				x = domainAxis.valueToJava2D(this.polygon[i], dataArea, domainEdge);
+				y = rangeAxis.valueToJava2D(this.polygon[i + 1], dataArea, rangeEdge);
+				area.lineTo((float) x, (float) y);
+			}
+			area.closePath();
+		}
+		return area;
+	}
 
     /**
      * Tests this annotation for equality with an arbitrary object.

@@ -145,45 +145,8 @@ public class XYShapeAnnotation extends AbstractXYAnnotation
                      int rendererIndex,
                      PlotRenderingInfo info) {
 
-        PlotOrientation orientation = plot.getOrientation();
-        RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(
-                plot.getDomainAxisLocation(), orientation);
-        RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(
-                plot.getRangeAxisLocation(), orientation);
-
-        // compute transform matrix elements via sample points. Assume no
-        // rotation or shear.
-        Rectangle2D bounds = this.shape.getBounds2D();
-        double x0 = bounds.getMinX();
-        double x1 = bounds.getMaxX();
-        double xx0 = domainAxis.valueToJava2D(x0, dataArea, domainEdge);
-        double xx1 = domainAxis.valueToJava2D(x1, dataArea, domainEdge);
-        double m00 = (xx1 - xx0) / (x1 - x0);
-        double m02 = xx0 - x0 * m00;
-
-        double y0 = bounds.getMaxY();
-        double y1 = bounds.getMinY();
-        double yy0 = rangeAxis.valueToJava2D(y0, dataArea, rangeEdge);
-        double yy1 = rangeAxis.valueToJava2D(y1, dataArea, rangeEdge);
-        double m11 = (yy1 - yy0) / (y1 - y0);
-        double m12 = yy0 - m11 * y0;
-
-        //  create transform & transform shape
-        Shape s = null;
-        if (orientation == PlotOrientation.HORIZONTAL) {
-            AffineTransform t1 = new AffineTransform(0.0f, 1.0f, 1.0f, 0.0f,
-                    0.0f, 0.0f);
-            AffineTransform t2 = new AffineTransform(m11, 0.0f, 0.0f, m00,
-                    m12, m02);
-            s = t1.createTransformedShape(this.shape);
-            s = t2.createTransformedShape(s);
-        }
-        else if (orientation == PlotOrientation.VERTICAL) {
-            AffineTransform t = new AffineTransform(m00, 0, 0, m11, m02, m12);
-            s = t.createTransformedShape(this.shape);
-        }
-
-        if (this.fillPaint != null) {
+        Shape s = s(plot, dataArea, domainAxis, rangeAxis);
+		if (this.fillPaint != null) {
             g2.setPaint(this.fillPaint);
             g2.fill(s);
         }
@@ -196,6 +159,36 @@ public class XYShapeAnnotation extends AbstractXYAnnotation
         addEntity(info, s, rendererIndex, getToolTipText(), getURL());
 
     }
+
+	private Shape s(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
+		PlotOrientation orientation = plot.getOrientation();
+		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);
+		RectangleEdge rangeEdge = Plot.resolveRangeAxisLocation(plot.getRangeAxisLocation(), orientation);
+		Rectangle2D bounds = this.shape.getBounds2D();
+		double x0 = bounds.getMinX();
+		double x1 = bounds.getMaxX();
+		double xx0 = domainAxis.valueToJava2D(x0, dataArea, domainEdge);
+		double xx1 = domainAxis.valueToJava2D(x1, dataArea, domainEdge);
+		double m00 = (xx1 - xx0) / (x1 - x0);
+		double m02 = xx0 - x0 * m00;
+		double y0 = bounds.getMaxY();
+		double y1 = bounds.getMinY();
+		double yy0 = rangeAxis.valueToJava2D(y0, dataArea, rangeEdge);
+		double yy1 = rangeAxis.valueToJava2D(y1, dataArea, rangeEdge);
+		double m11 = (yy1 - yy0) / (y1 - y0);
+		double m12 = yy0 - m11 * y0;
+		Shape s = null;
+		if (orientation == PlotOrientation.HORIZONTAL) {
+			AffineTransform t1 = new AffineTransform(0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+			AffineTransform t2 = new AffineTransform(m11, 0.0f, 0.0f, m00, m12, m02);
+			s = t1.createTransformedShape(this.shape);
+			s = t2.createTransformedShape(s);
+		} else if (orientation == PlotOrientation.VERTICAL) {
+			AffineTransform t = new AffineTransform(m00, 0, 0, m11, m02, m12);
+			s = t.createTransformedShape(this.shape);
+		}
+		return s;
+	}
 
     /**
      * Tests this annotation for equality with an arbitrary object.
