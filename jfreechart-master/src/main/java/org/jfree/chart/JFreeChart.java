@@ -1001,15 +1001,8 @@ public class JFreeChart implements Drawable, TitleChangeListener,
             }
         }
 
-        Rectangle2D plotArea = nonTitleArea;
-
-        // draw the plot (axes and data visualisation)
-        PlotRenderingInfo plotInfo = null;
-        if (info != null) {
-            plotInfo = info.getPlotInfo();
-        }
-        this.plot.draw(g2, plotArea, anchor, null, plotInfo);
-        g2.setClip(savedClip);
+        PlotRenderingInfo plotInfo = plotInfo_creation(g2, anchor, info, nonTitleArea);
+		g2.setClip(savedClip);
         if (this.elementHinting) {         
             g2.setRenderingHint(ChartHints.KEY_END_ELEMENT, Boolean.TRUE);            
         }
@@ -1018,7 +1011,18 @@ public class JFreeChart implements Drawable, TitleChangeListener,
                 ChartProgressEventType.DRAWING_FINISHED, 100));
     }
 
-    /**
+	private PlotRenderingInfo plotInfo_creation(Graphics2D g2, Point2D anchor, ChartRenderingInfo info,
+			Rectangle2D nonTitleArea) {
+		Rectangle2D plotArea = nonTitleArea;
+		PlotRenderingInfo plotInfo = null;
+		if (info != null) {
+			plotInfo = info.getPlotInfo();
+		}
+		this.plot.draw(g2, plotArea, anchor, null, plotInfo);
+		return plotInfo;
+	}
+
+    
      * Draws a title.  The title should be drawn at the top, bottom, left or
      * right of the specified area, and the area should be updated to reflect
      * the amount of space used by the title.
