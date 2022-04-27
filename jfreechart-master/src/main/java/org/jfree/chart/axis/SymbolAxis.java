@@ -69,7 +69,9 @@ import org.jfree.data.Range;
  */
 public class SymbolAxis extends NumberAxis implements Serializable {
 
-    /** For serialization. */
+    private SymbolAxisProduct symbolAxisProduct = new SymbolAxisProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = 7216330468770619716L;
 
     /** The default grid band paint. */
@@ -81,9 +83,6 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      */
     public static final Paint DEFAULT_GRID_BAND_ALTERNATE_PAINT
             = new Color(0, 0, 0, 0);  // transparent
-
-    /** The list of symbols to display instead of the numeric values. */
-    private List symbols;
 
     /** Flag that indicates whether or not grid bands are visible. */
     private boolean gridBandsVisible;
@@ -106,7 +105,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      */
     public SymbolAxis(String label, String[] sv) {
         super(label);
-        this.symbols = Arrays.asList(sv);
+        symbolAxisProduct.setSymbols(Arrays.asList(sv));
         this.gridBandsVisible = true;
         this.gridBandPaint = DEFAULT_GRID_BAND_PAINT;
         this.gridBandAlternatePaint = DEFAULT_GRID_BAND_ALTERNATE_PAINT;
@@ -120,9 +119,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      * @return The symbols.
      */
     public String[] getSymbols() {
-        String[] result = new String[this.symbols.size()];
-        result = (String[]) this.symbols.toArray(result);
-        return result;
+        return symbolAxisProduct.getSymbols();
     }
 
     /**
@@ -399,7 +396,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         if (plot instanceof ValueAxisPlot) {
 
             // ensure that all the symbols are displayed
-            double upper = this.symbols.size() - 1;
+            double upper = this.symbolAxisProduct.getSymbols2().size() - 1;
             double lower = 0;
             double range = upper - lower;
 
@@ -510,7 +507,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
                     tickLabel = formatter.format(currentTickValue);
                 }
                 else {
-                    tickLabel = valueToString(currentTickValue);
+                    tickLabel = symbolAxisProduct.valueToString(currentTickValue);
                 }
 
                 // avoid to draw overlapping tick labels
@@ -604,7 +601,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
                     tickLabel = formatter.format(currentTickValue);
                 }
                 else {
-                    tickLabel = valueToString(currentTickValue);
+                    tickLabel = symbolAxisProduct.valueToString(currentTickValue);
                 }
 
                 // avoid to draw overlapping tick labels
@@ -670,14 +667,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
      * @return The symbol.
      */
     public String valueToString(double value) {
-        String strToReturn;
-        try {
-            strToReturn = (String) this.symbols.get((int) value);
-        }
-        catch (IndexOutOfBoundsException  ex) {
-            strToReturn = "";
-        }
-        return strToReturn;
+        return symbolAxisProduct.valueToString(value);
     }
 
     /**
@@ -696,7 +686,7 @@ public class SymbolAxis extends NumberAxis implements Serializable {
             return false;
         }
         SymbolAxis that = (SymbolAxis) obj;
-        if (!this.symbols.equals(that.symbols)) {
+        if (!this.symbolAxisProduct.getSymbols2().equals(that.symbolAxisProduct.getSymbols2())) {
             return false;
         }
         if (this.gridBandsVisible != that.gridBandsVisible) {
@@ -739,5 +729,11 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         this.gridBandPaint = SerialUtils.readPaint(stream);
         this.gridBandAlternatePaint = SerialUtils.readPaint(stream);
     }
+
+	public Object clone() throws java.lang.CloneNotSupportedException {
+		SymbolAxis clone = (SymbolAxis) super.clone();
+		clone.symbolAxisProduct = (SymbolAxisProduct) this.symbolAxisProduct.clone();
+		return clone;
+	}
 
 }
