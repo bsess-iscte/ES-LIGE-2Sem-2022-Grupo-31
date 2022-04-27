@@ -101,7 +101,7 @@ public class BlockParams implements EntityBlockParams {
      *
      * @return The x-translation amount.
      */
-    public double getTranslateX() {
+    private double getTranslateX() {
         return this.translateX;
     }
 
@@ -111,7 +111,7 @@ public class BlockParams implements EntityBlockParams {
      *
      * @param x  the x-translation amount.
      */
-    public void setTranslateX(double x) {
+    private void setTranslateX(double x) {
         this.translateX = x;
     }
 
@@ -121,7 +121,7 @@ public class BlockParams implements EntityBlockParams {
      *
      * @return The y-translation amount.
      */
-    public double getTranslateY() {
+    private double getTranslateY() {
         return this.translateY;
     }
 
@@ -131,7 +131,7 @@ public class BlockParams implements EntityBlockParams {
      *
      * @param y  the y-translation amount.
      */
-    public void setTranslateY(double y) {
+    private void setTranslateY(double y) {
         this.translateY = y;
     }
 
