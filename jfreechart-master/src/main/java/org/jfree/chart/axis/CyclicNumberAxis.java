@@ -1061,37 +1061,34 @@ public class CyclicNumberAxis extends NumberAxis {
     public AxisSpace reserveSpace(Graphics2D g2, Plot plot,
             Rectangle2D plotArea, RectangleEdge edge, AxisSpace space) {
 
-        this.internalMarkerCycleBoundTick = null;
-        AxisSpace ret = super.reserveSpace(g2, plot, plotArea, edge, space);
+        space(g2, edge, space);
+		AxisSpace ret = super.reserveSpace(g2, plot, plotArea, edge, space);
         if (this.internalMarkerCycleBoundTick == null) {
             return ret;
-        }
-
-        FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
-        Rectangle2D r = TextUtils.getTextBounds(
-            this.internalMarkerCycleBoundTick.getText(), g2, fm
-        );
-
-        if (RectangleEdge.isTopOrBottom(edge)) {
-            if (isVerticalTickLabels()) {
-                space.add(r.getHeight() / 2, RectangleEdge.RIGHT);
-            }
-            else {
-                space.add(r.getWidth() / 2, RectangleEdge.RIGHT);
-            }
-        }
-        else if (RectangleEdge.isLeftOrRight(edge)) {
-            if (isVerticalTickLabels()) {
-                space.add(r.getWidth() / 2, RectangleEdge.TOP);
-            }
-            else {
-                space.add(r.getHeight() / 2, RectangleEdge.TOP);
-            }
         }
 
         return ret;
 
     }
+
+	private void space(Graphics2D g2, RectangleEdge edge, AxisSpace space) {
+		this.internalMarkerCycleBoundTick = null;
+		FontMetrics fm = g2.getFontMetrics(getTickLabelFont());
+		Rectangle2D r = TextUtils.getTextBounds(this.internalMarkerCycleBoundTick.getText(), g2, fm);
+		if (RectangleEdge.isTopOrBottom(edge)) {
+			if (isVerticalTickLabels()) {
+				space.add(r.getHeight() / 2, RectangleEdge.RIGHT);
+			} else {
+				space.add(r.getWidth() / 2, RectangleEdge.RIGHT);
+			}
+		} else if (RectangleEdge.isLeftOrRight(edge)) {
+			if (isVerticalTickLabels()) {
+				space.add(r.getWidth() / 2, RectangleEdge.TOP);
+			} else {
+				space.add(r.getHeight() / 2, RectangleEdge.TOP);
+			}
+		}
+	}
 
     /**
      * Provides serialization support.

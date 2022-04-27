@@ -129,7 +129,9 @@ import org.jfree.data.Range;
 public class JFreeChart implements Drawable, TitleChangeListener,
         PlotChangeListener, ChartElement, Serializable, Cloneable {
 
-    /** For serialization. */
+    private transient JFreeChartProduct jFreeChartProduct = new JFreeChartProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = -3470703747817429120L;
 
     /** The default font for titles. */
@@ -207,9 +209,6 @@ public class JFreeChart implements Drawable, TitleChangeListener,
     /** The alpha transparency for the background image. */
     private float backgroundImageAlpha = 0.5f;
 
-    /** Storage for registered change listeners. */
-    private transient EventListenerList changeListeners;
-
     /** Storage for registered progress listeners. */
     private transient EventListenerList progressListeners;
 
@@ -284,7 +283,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
         
         // create storage for listeners...
         this.progressListeners = new EventListenerList();
-        this.changeListeners = new EventListenerList();
+        jFreeChartProduct.setChangeListeners(new EventListenerList());
         this.notify = true;  // default is to notify listeners when the
                              // chart changes
 
@@ -1367,8 +1366,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
      * @see #removeChangeListener(ChartChangeListener)
      */
     public void addChangeListener(ChartChangeListener listener) {
-        Args.nullNotPermitted(listener, "listener");
-        this.changeListeners.add(ChartChangeListener.class, listener);
+        jFreeChartProduct.addChangeListener(listener);
     }
 
     /**
@@ -1379,8 +1377,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
      * @see #addChangeListener(ChartChangeListener)
      */
     public void removeChangeListener(ChartChangeListener listener) {
-        Args.nullNotPermitted(listener, "listener");
-        this.changeListeners.remove(ChartChangeListener.class, listener);
+        jFreeChartProduct.removeChangeListener(listener);
     }
 
     /**
@@ -1401,7 +1398,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
      */
     protected void notifyListeners(ChartChangeEvent event) {
         if (this.notify) {
-            Object[] listeners = this.changeListeners.getListenerList();
+            Object[] listeners = this.jFreeChartProduct.getChangeListeners().getListenerList();
             for (int i = listeners.length - 2; i >= 0; i -= 2) {
                 if (listeners[i] == ChartChangeListener.class) {
                     ((ChartChangeListener) listeners[i + 1]).chartChanged(
@@ -1561,6 +1558,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
      */
     private void writeObject(ObjectOutputStream stream) throws IOException {
         stream.defaultWriteObject();
+		stream.writeObject(this.jFreeChartProduct);
         SerialUtils.writeStroke(this.borderStroke, stream);
         SerialUtils.writePaint(this.borderPaint, stream);
         SerialUtils.writePaint(this.backgroundPaint, stream);
@@ -1577,11 +1575,12 @@ public class JFreeChart implements Drawable, TitleChangeListener,
     private void readObject(ObjectInputStream stream)
         throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
+		this.jFreeChartProduct = (JFreeChartProduct) stream.readObject();
         this.borderStroke = SerialUtils.readStroke(stream);
         this.borderPaint = SerialUtils.readPaint(stream);
         this.backgroundPaint = SerialUtils.readPaint(stream);
         this.progressListeners = new EventListenerList();
-        this.changeListeners = new EventListenerList();
+        jFreeChartProduct.setChangeListeners(new EventListenerList());
         this.renderingHints = new RenderingHints(
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1610,6 +1609,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
     @Override
     public Object clone() throws CloneNotSupportedException {
         JFreeChart chart = (JFreeChart) super.clone();
+		chart.jFreeChartProduct = (JFreeChartProduct) this.jFreeChartProduct.clone();
 
         chart.renderingHints = (RenderingHints) this.renderingHints.clone();
         // private boolean borderVisible;
@@ -1634,7 +1634,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
         }
 
         chart.progressListeners = new EventListenerList();
-        chart.changeListeners = new EventListenerList();
+        chart.jFreeChartProduct.setChangeListeners(new EventListenerList());
         return chart;
     }
 
