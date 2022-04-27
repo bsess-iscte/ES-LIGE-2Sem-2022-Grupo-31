@@ -90,30 +90,12 @@ public class ChartChangeEvent extends EventObject {
     }
 
     /**
-     * Returns the chart that generated the change event.
-     *
-     * @return The chart that generated the change event.
-     */
-    public JFreeChart getChart() {
-        return this.chart;
-    }
-
-    /**
      * Sets the chart that generated the change event.
      *
      * @param chart  the chart that generated the event.
      */
     public void setChart(JFreeChart chart) {
         this.chart = chart;
-    }
-
-    /**
-     * Returns the event type.
-     *
-     * @return The event type (never {@code null}).
-     */
-    public ChartChangeEventType getType() {
-        return this.type;
     }
 
     /**
