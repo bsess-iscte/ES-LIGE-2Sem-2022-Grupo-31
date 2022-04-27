@@ -1110,15 +1110,8 @@ public class JFreeChart implements Drawable, TitleChangeListener,
             }
         }
 
-        Rectangle2D plotArea = nonTitleArea;
-
-        // draw the plot (axes and data visualisation)
-        PlotRenderingInfo plotInfo = null;
-        if (info != null) {
-            plotInfo = info.getPlotInfo();
-        }
-        this.plot.draw(g2, plotArea, anchor, null, plotInfo);
-        g2.setClip(savedClip);
+        PlotRenderingInfo plotInfo = plotInfo_creation(g2, anchor, info, nonTitleArea);
+		g2.setClip(savedClip);
         if (this.elementHinting) {         
             g2.setRenderingHint(ChartHints.KEY_END_ELEMENT, Boolean.TRUE);            
         }
@@ -1126,6 +1119,17 @@ public class JFreeChart implements Drawable, TitleChangeListener,
         notifyListeners(new ChartProgressEvent(this, this,
                 ChartProgressEventType.DRAWING_FINISHED, 100));
     }
+
+	private PlotRenderingInfo plotInfo_creation(Graphics2D g2, Point2D anchor, ChartRenderingInfo info,
+			Rectangle2D nonTitleArea) {
+		Rectangle2D plotArea = nonTitleArea;
+		PlotRenderingInfo plotInfo = null;
+		if (info != null) {
+			plotInfo = info.getPlotInfo();
+		}
+		this.plot.draw(g2, plotArea, anchor, null, plotInfo);
+		return plotInfo;
+	}
 
     /**
      * Creates a rectangle that is aligned to the frame.
@@ -1142,38 +1146,49 @@ public class JFreeChart implements Drawable, TitleChangeListener,
             VerticalAlignment vAlign) {
         Args.nullNotPermitted(hAlign, "hAlign");
         Args.nullNotPermitted(vAlign, "vAlign");
-        double x = Double.NaN;
-        double y = Double.NaN;
-        switch (hAlign) {
-            case LEFT:
-                x = frame.getX();
-                break;
-            case CENTER:
-                x = frame.getCenterX() - (dimensions.width / 2.0);
-                break;
-            case RIGHT:
-                x = frame.getMaxX() - dimensions.width;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected enum value " + hAlign);
-        }
-        switch (vAlign) {
-            case TOP:
-                y = frame.getY();
-                break;
-            case CENTER:
-                y = frame.getCenterY() - (dimensions.height / 2.0);
-                break;
-            case BOTTOM:
-                y = frame.getMaxY() - dimensions.height;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected enum value " + hAlign);
-        }
-
-        return new Rectangle2D.Double(x, y, dimensions.width,
+        double x = x_creation(dimensions, frame, hAlign);
+		double y = y_creation(dimensions, frame, hAlign, vAlign);
+		return new Rectangle2D.Double(x, y, dimensions.width,
                 dimensions.height);
     }
+
+	private double y_creation(Size2D dimensions, Rectangle2D frame, HorizontalAlignment hAlign,
+			VerticalAlignment vAlign) throws IllegalStateException {
+		double y = Double.NaN;
+		switch (vAlign) {
+		case TOP:
+			y = frame.getY();
+			break;
+		case CENTER:
+			y = frame.getCenterY() - (dimensions.height / 2.0);
+			break;
+		case BOTTOM:
+			y = frame.getMaxY() - dimensions.height;
+			break;
+		default:
+			throw new IllegalStateException("Unexpected enum value " + hAlign);
+		}
+		return y;
+	}
+
+	private double x_creation(Size2D dimensions, Rectangle2D frame, HorizontalAlignment hAlign)
+			throws IllegalStateException {
+		double x = Double.NaN;
+		switch (hAlign) {
+		case LEFT:
+			x = frame.getX();
+			break;
+		case CENTER:
+			x = frame.getCenterX() - (dimensions.width / 2.0);
+			break;
+		case RIGHT:
+			x = frame.getMaxX() - dimensions.width;
+			break;
+		default:
+			throw new IllegalStateException("Unexpected enum value " + hAlign);
+		}
+		return x;
+	}
 
     /**
      * Draws a title.  The title should be drawn at the top, bottom, left or
