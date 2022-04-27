@@ -56,13 +56,4 @@ public class TitleChangeEvent extends ChartChangeEvent {
         this.title = title;
     }
 
-    /**
-     * Returns the title that generated the event.
-     *
-     * @return The title that generated the event.
-     */
-    public Title getTitle() {
-        return this.title;
-    }
-
 }

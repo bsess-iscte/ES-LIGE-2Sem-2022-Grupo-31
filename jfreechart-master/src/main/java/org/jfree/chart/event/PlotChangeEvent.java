@@ -59,13 +59,5 @@ public class PlotChangeEvent extends ChartChangeEvent {
         this.plot = plot;
     }
 
-    /**
-     * Returns the plot that generated the event (set in the constructor).
-     *
-     * @return The plot that generated the event.
-     */
-    public Plot getPlot() {
-        return this.plot;
-    }
 
 }

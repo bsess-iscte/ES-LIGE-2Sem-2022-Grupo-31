@@ -104,8 +104,8 @@ public class ModuloAxis extends NumberAxis {
      * @param end  the end value.
      */
     public void setDisplayRange(double start, double end) {
-        this.displayStart = mapValueToFixedRange(start);
-        this.displayEnd = mapValueToFixedRange(end);
+        this.displayStart = fixedRange.mapValueToFixedRange(start);
+        this.displayEnd = fixedRange.mapValueToFixedRange(end);
         if (this.displayStart < this.displayEnd) {
             setRange(this.displayStart, this.displayEnd);
         }
@@ -138,7 +138,7 @@ public class ModuloAxis extends NumberAxis {
     public double valueToJava2D(double value, Rectangle2D area,
             RectangleEdge edge) {
         double result;
-        double v = mapValueToFixedRange(value);
+        double v = fixedRange.mapValueToFixedRange(value);
         if (this.displayStart < this.displayEnd) {  // regular number axis
             result = trans(v, area, edge);
         }
@@ -266,24 +266,6 @@ public class ModuloAxis extends NumberAxis {
     }
 
     /**
-     * Maps a data value into the fixed range.
-     *
-     * @param value  the value.
-     *
-     * @return The mapped value.
-     */
-    private double mapValueToFixedRange(double value) {
-        double lower = this.fixedRange.getLowerBound();
-        double length = this.fixedRange.getLength();
-        if (value < lower) {
-            return lower + length + ((value - lower) % length);
-        }
-        else {
-            return lower + ((value - lower) % length);
-        }
-    }
-
-    /**
      * Translates a Java2D coordinate into a data value.
      *
      * @param java2DValue  the Java2D coordinate.
@@ -326,7 +308,7 @@ public class ModuloAxis extends NumberAxis {
      * @return The central value.
      */
     private double getDisplayCentralValue() {
-        return mapValueToFixedRange(this.displayStart 
+        return fixedRange.mapValueToFixedRange(this.displayStart 
                 + (getDisplayLength() / 2));
     }
 

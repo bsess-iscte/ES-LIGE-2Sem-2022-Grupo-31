@@ -28,9 +28,15 @@
 
 package org.jfree.chart.api;
 
+import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import org.jfree.chart.axis.CategoryLabelPosition;
+import org.jfree.chart.block.Size2D;
 import org.jfree.chart.internal.Args;
+import org.jfree.chart.internal.ShapeUtils;
+import org.jfree.chart.text.TextBlock;
 
 /**
  * Represents the insets for a rectangle, specified in absolute or relative 
@@ -519,6 +525,36 @@ public class RectangleInsets implements Serializable {
         double b = calculateBottomInset(h);
         area.setRect(area.getX() + l, area.getY() + t, w - l - r, h - t - b);    
     }
+
+	/**
+	 * Calculates the width of a category label when rendered.
+	 * @param label   the text block ( {@code  null}  not permitted).
+	 * @param position   the position.
+	 * @param g2   the graphics device.
+	 * @return  The width.
+	 */
+	public double calculateCategoryLabelWidth(TextBlock label, CategoryLabelPosition position, Graphics2D g2) {
+		Size2D size = label.calculateDimensions(g2);
+		Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(), size.getHeight());
+		Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(), 0.0f, 0.0f);
+		double w = rotatedBox.getBounds2D().getWidth() + getLeft() + getRight();
+		return w;
+	}
+
+	/**
+	 * Calculates the height of a category label when rendered.
+	 * @param block   the text block ( {@code  null}  not permitted).
+	 * @param position   the label position ( {@code  null}  not permitted).
+	 * @param g2   the graphics device ( {@code  null}  not permitted).
+	 * @return  The height.
+	 */
+	public double calculateCategoryLabelHeight(TextBlock block, CategoryLabelPosition position, Graphics2D g2) {
+		Size2D size = block.calculateDimensions(g2);
+		Rectangle2D box = new Rectangle2D.Double(0.0, 0.0, size.getWidth(), size.getHeight());
+		Shape rotatedBox = ShapeUtils.rotateShape(box, position.getAngle(), 0.0f, 0.0f);
+		double h = rotatedBox.getBounds2D().getHeight() + getTop() + getBottom();
+		return h;
+	}
     
 }
 

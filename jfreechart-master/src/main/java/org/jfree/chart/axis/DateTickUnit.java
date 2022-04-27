@@ -51,7 +51,9 @@ import org.jfree.chart.internal.Args;
  */
 public class DateTickUnit extends TickUnit implements Serializable {
 
-    /** For serialization. */
+    private DateTickUnitProduct dateTickUnitProduct = new DateTickUnitProduct();
+
+	/** For serialization. */
     private static final long serialVersionUID = -7289292157229621901L;
 
     /**
@@ -61,14 +63,6 @@ public class DateTickUnit extends TickUnit implements Serializable {
 
     /** The unit count. */
     private int count;
-
-    /**
-     * The roll unit type.
-     */
-    private DateTickUnitType rollUnitType;
-
-    /** The roll count. */
-    private int rollCount;
 
     /** The date formatter. */
     private DateFormat formatter;
@@ -119,8 +113,8 @@ public class DateTickUnit extends TickUnit implements Serializable {
         }
         this.unitType = unitType;
         this.count = multiple;
-        this.rollUnitType = rollUnitType;
-        this.rollCount = rollMultiple;
+        dateTickUnitProduct.setRollUnitType(rollUnitType);
+        dateTickUnitProduct.setRollCount(rollMultiple);
         this.formatter = formatter;
     }
 
@@ -148,7 +142,7 @@ public class DateTickUnit extends TickUnit implements Serializable {
      * @return The roll unit type (never {@code null}).
      */
     public DateTickUnitType getRollUnitType() {
-        return this.rollUnitType;
+        return this.dateTickUnitProduct.getRollUnitType();
     }
 
     /**
@@ -157,7 +151,7 @@ public class DateTickUnit extends TickUnit implements Serializable {
      * @return The roll unit multiple.
      */
     public int getRollMultiple() {
-        return this.rollCount;
+        return this.dateTickUnitProduct.getRollCount();
     }
 
     /**
@@ -213,7 +207,7 @@ public class DateTickUnit extends TickUnit implements Serializable {
      * @see #rollDate(Date, TimeZone)
      */
     public Date rollDate(Date base) {
-        return rollDate(base, TimeZone.getDefault());
+        return dateTickUnitProduct.rollDate(base, TimeZone.getDefault());
     }
 
     /**
@@ -226,14 +220,7 @@ public class DateTickUnit extends TickUnit implements Serializable {
      * @return The rolled date.
      */
     public Date rollDate(Date base, TimeZone zone) {
-        // as far as I know, the Locale for the calendar only affects week
-        // number calculations, and since DateTickUnit doesn't do week
-        // arithmetic, the default locale (whatever it is) should be fine
-        // here...
-        Calendar calendar = Calendar.getInstance(zone);
-        calendar.setTime(base);
-        calendar.add(this.rollUnitType.getCalendarField(), this.rollCount);
-        return calendar.getTime();
+        return dateTickUnitProduct.rollDate(base, zone);
     }
 
     /**
