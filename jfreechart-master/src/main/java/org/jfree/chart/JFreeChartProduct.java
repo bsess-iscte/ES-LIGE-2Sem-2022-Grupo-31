@@ -1,6 +1,18 @@
 package org.jfree.chart;
 
 
+
+import javax.swing.event.EventListenerList;
+import org.jfree.chart.event.ChartChangeListener;
+import org.jfree.chart.internal.Args;
+import java.io.Serializable;
+
+public class JFreeChartProduct implements Serializable, Cloneable {
+	private transient EventListenerList changeListeners;
+
+	public EventListenerList getChangeListeners() {
+		return changeListeners;
+
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Paint;
@@ -204,6 +216,7 @@ public class JFreeChartProduct implements Serializable, Cloneable {
 	public void notifyListeners(ChartChangeEvent event) {
 		jFreeChartProductProduct.notifyListeners(event, this.changeListeners);
 	}
+
 
 	/**
 	* Registers an object for notification of changes to the chart.
@@ -468,6 +481,7 @@ public class JFreeChartProduct implements Serializable, Cloneable {
 		thisSubtitles.clear();
 		fireChartChanged(jFreeChart);
 	}
+
 
 	public Object clone() throws CloneNotSupportedException {
 		return (JFreeChartProduct) super.clone();

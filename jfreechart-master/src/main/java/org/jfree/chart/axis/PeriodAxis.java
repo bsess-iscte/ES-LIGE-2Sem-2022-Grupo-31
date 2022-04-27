@@ -553,15 +553,8 @@ public class PeriodAxis extends ValueAxis
         // get the axis label size and update the space object...
         Rectangle2D labelEnclosure = getLabelEnclosure(g2, edge);
         double labelHeight, labelWidth;
-        double tickLabelBandsDimension = 0.0;
-
-        for (PeriodAxisLabelInfo info : this.labelInfo) {
-            FontMetrics fm = g2.getFontMetrics(info.getLabelFont());
-            tickLabelBandsDimension
-                += info.getPadding().extendHeight(fm.getHeight());
-        }
-
-        if (RectangleEdge.isTopOrBottom(edge)) {
+        double tickLabelBandsDimension = tickLabelBandsDimension(g2);
+		if (RectangleEdge.isTopOrBottom(edge)) {
             labelHeight = labelEnclosure.getHeight();
             space.add(labelHeight + tickLabelBandsDimension, edge);
         }
@@ -582,6 +575,15 @@ public class PeriodAxis extends ValueAxis
         space.add(tickMarkSpace, edge);
         return space;
     }
+
+	private double tickLabelBandsDimension(Graphics2D g2) {
+		double tickLabelBandsDimension = 0.0;
+		for (PeriodAxisLabelInfo info : this.labelInfo) {
+			FontMetrics fm = g2.getFontMetrics(info.getLabelFont());
+			tickLabelBandsDimension += info.getPadding().extendHeight(fm.getHeight());
+		}
+		return tickLabelBandsDimension;
+	}
 
     /**
      * Draws the axis on a Java 2D graphics device (such as the screen or a
