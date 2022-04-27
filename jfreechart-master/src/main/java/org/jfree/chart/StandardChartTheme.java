@@ -1279,16 +1279,8 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
      * @param <S> the type for the series keys.
      */
     protected <S extends Comparable<S>> void applyToXYPlot(XYPlot<S> plot) {
-        plot.setAxisOffset(this.axisOffset);
-        plot.setDomainZeroBaselinePaint(this.baselinePaint);
-        plot.setRangeZeroBaselinePaint(this.baselinePaint);
-        plot.setDomainGridlinePaint(this.domainGridlinePaint);
-        plot.setRangeGridlinePaint(this.rangeGridlinePaint);
-        plot.setDomainCrosshairPaint(this.crosshairPaint);
-        plot.setRangeCrosshairPaint(this.crosshairPaint);
-        plot.setShadowGenerator(this.shadowGenerator);
-
-        // process all domain axes
+        plot_setoptions(plot);
+		// process all domain axes
         int domainAxisCount = plot.getDomainAxisCount();
         for (int i = 0; i < domainAxisCount; i++) {
             ValueAxis axis = plot.getDomainAxis(i);
@@ -1337,6 +1329,17 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
+
+	private <S extends Comparable<S>> void plot_setoptions(XYPlot<S> plot) {
+		plot.setAxisOffset(this.axisOffset);
+		plot.setDomainZeroBaselinePaint(this.baselinePaint);
+		plot.setRangeZeroBaselinePaint(this.baselinePaint);
+		plot.setDomainGridlinePaint(this.domainGridlinePaint);
+		plot.setRangeGridlinePaint(this.rangeGridlinePaint);
+		plot.setDomainCrosshairPaint(this.crosshairPaint);
+		plot.setRangeCrosshairPaint(this.crosshairPaint);
+		plot.setShadowGenerator(this.shadowGenerator);
+	}
 
     /**
      * Applies the attributes of this theme to a {@link FastScatterPlot}.
