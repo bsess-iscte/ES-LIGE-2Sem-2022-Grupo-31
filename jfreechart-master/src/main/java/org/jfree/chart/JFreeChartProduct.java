@@ -7,12 +7,7 @@ import org.jfree.chart.event.ChartChangeListener;
 import org.jfree.chart.internal.Args;
 import java.io.Serializable;
 
-public class JFreeChartProduct implements Serializable, Cloneable {
-	private transient EventListenerList changeListeners;
-
-	public EventListenerList getChangeListeners() {
-		return changeListeners;
-
+	
 import java.awt.RenderingHints;
 import java.awt.Stroke;
 import java.awt.Paint;
@@ -31,7 +26,8 @@ import java.util.ArrayList;
 import java.io.Serializable;
 
 public class JFreeChartProduct implements Serializable, Cloneable {
-	private JFreeChartProductProduct jFreeChartProductProduct = new JFreeChartProductProduct();
+
+private JFreeChartProductProduct jFreeChartProductProduct = new JFreeChartProductProduct();
 	private transient RenderingHints renderingHints;
 	private boolean borderVisible;
 	private transient Stroke borderStroke;

@@ -1023,7 +1023,7 @@ public class JFreeChart implements Drawable, TitleChangeListener,
 	}
 
     
-     * Draws a title.  The title should be drawn at the top, bottom, left or
+     /** Draws a title.  The title should be drawn at the top, bottom, left or
      * right of the specified area, and the area should be updated to reflect
      * the amount of space used by the title.
      *

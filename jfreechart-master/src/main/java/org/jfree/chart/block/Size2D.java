@@ -174,18 +174,18 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
 	 * @param vAlign   the vertical alignment ( {@code  null}  not permitted).
 	 * @return  A rectangle.
 	 */
-	private Rectangle2D createAlignedRectangle2D(Size2D dimensions,
+	public Rectangle2D createAlignedRectangle2D(
             Rectangle2D frame, HorizontalAlignment hAlign,
             VerticalAlignment vAlign) {
         Args.nullNotPermitted(hAlign, "hAlign");
         Args.nullNotPermitted(vAlign, "vAlign");
-        double x = x_creation(dimensions, frame, hAlign);
-		double y = y_creation(dimensions, frame, hAlign, vAlign);
-		return new Rectangle2D.Double(x, y, dimensions.width,
-                dimensions.height);
+        double x = x_creation(frame, hAlign);
+		double y = y_creation(frame, hAlign, vAlign);
+		return new Rectangle2D.Double(x, y, this.width,
+                this.height);
     	}
 
-	private double y_creation(Size2D dimensions, Rectangle2D frame, HorizontalAlignment hAlign,
+	private double y_creation(Rectangle2D frame, HorizontalAlignment hAlign,
 			VerticalAlignment vAlign) throws IllegalStateException {
 		double y = Double.NaN;
 		switch (vAlign) {
@@ -193,10 +193,10 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
 			y = frame.getY();
 			break;
 		case CENTER:
-			y = frame.getCenterY() - (dimensions.height / 2.0);
+			y = frame.getCenterY() - (this.height / 2.0);
 			break;
 		case BOTTOM:
-			y = frame.getMaxY() - dimensions.height;
+			y = frame.getMaxY() - this.height;
 			break;
 		default:
 			throw new IllegalStateException("Unexpected enum value " + hAlign);
@@ -204,7 +204,7 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
 		return y;
 	}
 
-	private double x_creation(Size2D dimensions, Rectangle2D frame, HorizontalAlignment hAlign)
+	private double x_creation(Rectangle2D frame, HorizontalAlignment hAlign)
 			throws IllegalStateException {
 		double x = Double.NaN;
 		switch (hAlign) {
@@ -212,10 +212,10 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
 			x = frame.getX();
 			break;
 		case CENTER:
-			x = frame.getCenterX() - (dimensions.width / 2.0);
+			x = frame.getCenterX() - (this.width / 2.0);
 			break;
 		case RIGHT:
-			x = frame.getMaxX() - dimensions.width;
+			x = frame.getMaxX() - this.width;
 			break;
 		default:
 			throw new IllegalStateException("Unexpected enum value " + hAlign);
