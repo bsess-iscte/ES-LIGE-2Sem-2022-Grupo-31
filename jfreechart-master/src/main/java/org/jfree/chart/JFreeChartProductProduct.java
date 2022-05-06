@@ -6,13 +6,27 @@ import org.jfree.chart.event.ChartChangeListener;
 import java.io.Serializable;
 import javax.swing.event.EventListenerList;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.JFreeChartProduct.
+ *
+ * @author Bárbara
+ */
 public class JFreeChartProductProduct implements Serializable, Cloneable {
 	private boolean notify;
 
+	/**
+	 * Returns the notification.
+	 * 
+	 * @return		A notification.
+	 */
 	public boolean getNotify() {
 		return notify;
 	}
 
+	/**
+	* Sets a flag that controls whether or not listeners receive  {@link ChartChangeEvent}   notifications.
+	* @param notify    a boolean.
+	*/
 	public void setNotify2(boolean notify) {
 		this.notify = notify;
 	}
@@ -43,7 +57,15 @@ public class JFreeChartProductProduct implements Serializable, Cloneable {
 			}
 		}
 	}
-
+	
+	/**
+     * Clones the object, and takes care of listeners.
+     * Note: caller shall register its own listeners on cloned graph.
+     *
+     * @return A clone.
+     *
+     * @throws CloneNotSupportedException if the chart is not cloneable.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (JFreeChartProductProduct) super.clone();
 	}

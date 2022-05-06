@@ -324,7 +324,23 @@ public class SymbolAxis extends NumberAxis implements Serializable {
             currentGridBandIsDark = !currentGridBandIsDark;
         }
     }
-
+   
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.SymbolAxis.drawGridBandsHorizontal.
+     * 
+     * Creates and returns a new rectangle according with the attributes.
+     *
+     * @param dataArea  the area for the data (to which the axes are aligned) .   
+     * @param yy  Y of the area for the data.
+     * @param xx1
+     * @param xx2
+     * @param outlineStrokeWidth  width of the outline stroke of the plot.
+     * @param iterator   ticks iterator.
+     * @param tick
+     * @param band
+     * 
+     * @return A Rectangle.
+     */
 	private Rectangle2D band(Rectangle2D dataArea, double yy, double xx1, double xx2, double outlineStrokeWidth,
 			Iterator iterator, ValueTick tick, Rectangle2D band) {
 		tick = (ValueTick) iterator.next();
@@ -380,6 +396,14 @@ public class SymbolAxis extends NumberAxis implements Serializable {
         }
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.SymbolAxis.drawGridBandsVertical.
+     * 
+	 * Returns the width of the outline stroke of the plot.
+     *
+     * @return The width of the outline stroke.
+     */
 	private double outlineStrokeWidth() {
 		double outlineStrokeWidth = 1.0;
 		Stroke outlineStroke = getPlot().getOutlineStroke();

@@ -666,6 +666,17 @@ public abstract class ChartFactory {
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.ChartFactory.createBarChart.
+     * 
+     * Creates a bar renderer.
+     *
+     * @param orientation  the plot orientation (horizontal or vertical)
+     * @param tooltips  configure chart to generate tool tips?
+     * @param urls  configure chart to generate URLs?
+     *
+     * @return A bar renderer.
+     */
 	private static BarRenderer renderer_refactored(PlotOrientation orientation, boolean tooltips, boolean urls) {
 		BarRenderer renderer = new BarRenderer();
 		if (orientation == PlotOrientation.HORIZONTAL) {
@@ -826,6 +837,15 @@ public abstract class ChartFactory {
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.ChartFactory.createAreaChart.
+     * Creates and returns an area renderer.
+     *
+     * @param tooltips  configure chart to generate tool tips?
+     * @param urls  configure chart to generate URLs?
+     *
+     * @return An area renderer.
+     */
 	private static AreaRenderer renderer_AreaChart(boolean tooltips, boolean urls) {
 		AreaRenderer renderer = new AreaRenderer();
 		if (tooltips) {
@@ -973,6 +993,15 @@ public abstract class ChartFactory {
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.ChartFactory.createLineChart.
+     * Creates a line and shape renderer.
+     *
+     * @param tooltips  configure chart to generate tool tips?
+     * @param urls  configure chart to generate URLs?
+     *
+     * @return A line and shape renderer.
+     */
 	private static LineAndShapeRenderer renderer_LineChart(boolean tooltips, boolean urls) {
 		LineAndShapeRenderer renderer = new LineAndShapeRenderer(true, false);
 		if (tooltips) {
@@ -1301,6 +1330,17 @@ public abstract class ChartFactory {
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.ChartFactory.createXYBarChart.
+     * Creates and returns a default instance of an XY bar chart.
+     * <P>
+     *
+     * @param dateAxis  make the domain axis display dates?
+     * @param tooltips  configure chart to generate tool tips?
+     * @param urls  configure chart to generate URLs?
+     *
+     * @return An XY bar renderer.
+     */
 	private static XYBarRenderer renderer_optimized(boolean dateAxis, boolean tooltips, boolean urls) {
 		XYBarRenderer renderer = new XYBarRenderer();
 		if (tooltips) {
@@ -1721,6 +1761,16 @@ public abstract class ChartFactory {
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.ChartFactory.createTimeSeriesChart.
+     * Creates and returns an XY line and shape renderer.
+     * <P>
+     *
+     * @param tooltips  configure chart to generate tool tips?
+     * @param urls  configure chart to generate URLs?
+     *
+     * @return An XY line and shape renderer
+     */
 	private static XYLineAndShapeRenderer renderer_XYLine(boolean tooltips, boolean urls) {
 		XYToolTipGenerator toolTipGenerator = null;
 		if (tooltips) {
@@ -2017,6 +2067,16 @@ public abstract class ChartFactory {
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.ChartFactory.createWindPlot.
+     * Creates a wind item renderer.
+     *
+     * @param tooltips  configure chart to generate tool tips?
+     * @param urls  configure chart to generate URLs?
+     *
+     * @return A wind item renderer.
+     *
+     */
 	private static WindItemRenderer renderer_WindItem(boolean tooltips, boolean urls) {
 		WindItemRenderer renderer = new WindItemRenderer();
 		if (tooltips) {

@@ -209,6 +209,14 @@ public class XYImageAnnotation extends AbstractXYAnnotation
         }
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.XYImageAnnotation.draw.
+     * 
+     * Creates and returns a rectangle.
+     *
+     * @return A rectangle.
+     */
 	private Rectangle2D imageRect() {
 		int w = this.image.getWidth(null);
 		int h = this.image.getHeight(null);

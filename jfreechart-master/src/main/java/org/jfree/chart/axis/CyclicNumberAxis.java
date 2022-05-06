@@ -1065,6 +1065,16 @@ public class CyclicNumberAxis extends NumberAxis {
 
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.CyclicNumberAxis.reserveSpace.
+     * 
+     * Adds space to the edges of the rectangle.
+     *
+     * @param g2  the graphics device.
+     * @param edge  the edge.
+     * @param space  the space already reserved.
+     */
 	private void space(Graphics2D g2, RectangleEdge edge, AxisSpace space) {
 		this.internalMarkerCycleBoundTick = null;
 		FontMetrics fm = g2.getFontMetrics(getTickLabelFont());

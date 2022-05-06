@@ -1083,6 +1083,14 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
         }
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.StandardChartTheme.applyToTitle.
+     * Applies attributes to the specified title and returns its value axis.
+     *
+     * @param title  the title.
+     * 
+     * @return A value axis.
+     */
 	private ValueAxis applyToPaintScaleLegend(Title title) {
 		PaintScaleLegend psl = (PaintScaleLegend) title;
 		psl.setBackgroundPaint(this.legendBackgroundPaint);
@@ -1161,7 +1169,13 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             applyToPolarPlot((PolarPlot) plot);
         }
     }
-
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.StandardChartTheme.applyToPlot.
+     * Applies attributes to a plot.
+     *
+     * @param plot  the plot.
+     */
 	private void plotDrawSetter(Plot plot) {
 		if (plot.getDrawingSupplier() != null) {
 			plot.setDrawingSupplier(getDrawingSupplier());
@@ -1258,7 +1272,13 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
-
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.StandardChartTheme.applyToCategoryPlot.
+     * Applies the attributes of this theme to a {@link CategoryPlot}.
+     *
+     * @param plot  the plot.
+     */
 	private void plotSetter(CategoryPlot plot) {
 		plot.setAxisOffset(this.axisOffset);
 		plot.setDomainGridlinePaint(this.domainGridlinePaint);
@@ -1325,7 +1345,16 @@ public class StandardChartTheme implements ChartTheme, Cloneable,
             }
         }
     }
-
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.StandardChartTheme.applyToXYPlot.
+     * 
+     * Applies the attributes of this theme to a {@link XYPlot}.
+     *
+     * @param plot  the plot.
+     * 
+     * @param <S> the type for the series keys.
+     */
 	private <S extends Comparable<S>> void plot_setoptions(XYPlot<S> plot) {
 		plot.setAxisOffset(this.axisOffset);
 		plot.setDomainZeroBaselinePaint(this.baselinePaint);

@@ -395,6 +395,15 @@ public class CategoryPointerAnnotation extends CategoryTextAnnotation
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.CategoryPointerAnnotation.draw.
+     * Creates and returns a line according with the attributes.
+     *
+     * @param j2DX  the graphics device.
+     * @param j2DY  the plot.
+     * 
+     * @return A line.
+     */
 	private Line2D line(double j2DX, double j2DY) {
 		double startX = j2DX + Math.cos(this.angle) * this.baseRadius;
 		double startY = j2DY + Math.sin(this.angle) * this.baseRadius;
@@ -406,6 +415,17 @@ public class CategoryPointerAnnotation extends CategoryTextAnnotation
 		return line;
 	}
 
+	/**
+	 * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.CategoryPointerAnnotation.draw.
+     * Creates and returns a general path according with the attributes.
+     *
+     * @param plot  the plot.
+     * @param dataArea  the data area.
+     * @param domainAxis  the domain axis.
+     * @param rangeAxis  the range axis.
+     * 
+     * @return A general path.
+     */
 	private GeneralPath arrow(CategoryPlot plot, Rectangle2D dataArea, CategoryAxis domainAxis, ValueAxis rangeAxis) {
 		PlotOrientation orientation = plot.getOrientation();
 		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);

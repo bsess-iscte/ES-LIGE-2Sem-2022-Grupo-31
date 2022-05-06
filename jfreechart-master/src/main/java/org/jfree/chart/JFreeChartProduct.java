@@ -25,6 +25,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.JFreeChart.
+ *
+ * @author Bárbara
+ */
 public class JFreeChartProduct implements Serializable, Cloneable {
 
 private JFreeChartProductProduct jFreeChartProductProduct = new JFreeChartProductProduct();
@@ -39,94 +44,221 @@ private JFreeChartProductProduct jFreeChartProductProduct = new JFreeChartProduc
 	private RectangleAlignment backgroundImageAlignment = RectangleAlignment.FILL;
 	private float backgroundImageAlpha = 0.5f;
 	private transient EventListenerList changeListeners;
+	
+	/**
+     * Returns the collection of rendering hints for the chart.
+     *
+     * @return The rendering hints for the chart (never {@code null}).
+     */
 	public RenderingHints getRenderingHints() {
 		return renderingHints;
 	}
 
+	/**
+     * Sets the rendering hints for the chart.
+     *
+     * @param renderingHints  the rendering hints ({@code null} not permitted).
+     */
 	public void setRenderingHints2(RenderingHints renderingHints) {
 		this.renderingHints = renderingHints;
 	}
 
+	 /**
+     * Returns a flag that controls whether or not a border is drawn around the
+     * outside of the chart.
+     *
+     * @return A boolean.
+     */
 	public boolean getBorderVisible() {
 		return borderVisible;
 	}
 
+	/**
+     * Sets a flag that controls whether or not a border is drawn around the
+     * outside of the chart.
+     *
+     * @param visible  the flag.
+     */
 	public void setBorderVisible2(boolean borderVisible) {
 		this.borderVisible = borderVisible;
 	}
 
+	 /**
+     * Returns the stroke used to draw the chart border (if visible).
+     *
+     * @return The border stroke.
+     */
 	public Stroke getBorderStroke() {
 		return borderStroke;
 	}
 
+	/**
+     * Sets the stroke used to draw the chart border (if visible).
+     *
+     * @param stroke  the stroke.
+     */
 	public void setBorderStroke2(Stroke borderStroke) {
 		this.borderStroke = borderStroke;
 	}
 
+	 /**
+     * Returns the paint used to draw the chart border (if visible).
+     *
+     * @return The border paint.
+     */
 	public Paint getBorderPaint() {
 		return borderPaint;
 	}
 
+	/**
+     * Sets the paint used to draw the chart border (if visible).
+     *
+     * @param paint  the paint.
+     */
 	public void setBorderPaint2(Paint borderPaint) {
 		this.borderPaint = borderPaint;
 	}
 
+	/**
+     * Returns the padding between the chart border and the chart drawing area.
+     *
+     * @return The padding (never {@code null}).
+     */
 	public RectangleInsets getPadding() {
 		return padding;
 	}
 
+	 /**
+     * Sets the padding between the chart border and the chart drawing area,
+     * and sends a {@link ChartChangeEvent} to all registered listeners.
+     *
+     * @param padding  the padding ({@code null} not permitted).
+     */
 	public void setPadding2(RectangleInsets padding) {
 		this.padding = padding;
 	}
 
+	/**
+     * Returns the main chart title.  Very often a chart will have just one
+     * title, so we make this case simple by providing accessor methods for
+     * the main title.  However, multiple titles are supported - see the
+     * {@link #addSubtitle(Title)} method.
+     *
+     * @return The chart title (possibly {@code null}).
+     */
 	public TextTitle getTitle() {
 		return title;
 	}
 
+	/**
+     * Sets the main title for the chart and sends a {@link ChartChangeEvent}
+     * to all registered listeners. 
+     *
+     * @param title  the title ({@code null} permitted).
+     */
 	public void setTitle2(TextTitle title) {
 		this.title = title;
 	}
 
+	/**
+     * Returns the paint used for the chart background.
+     *
+     * @return The paint (possibly {@code null}).
+     */
 	public Paint getBackgroundPaint() {
 		return backgroundPaint;
 	}
 
+	 /**
+     * Sets the paint used to fill the chart background and sends a
+     * {@link ChartChangeEvent} to all registered listeners.
+     *
+     * @param paint  the paint ({@code null} permitted).
+     */
 	public void setBackgroundPaint2(Paint backgroundPaint) {
 		this.backgroundPaint = backgroundPaint;
 	}
 
+	/**
+     * Returns the background image for the chart, or {@code null} if
+     * there is no image.
+     *
+     * @return The image (possibly {@code null}).
+     */
 	public Image getBackgroundImage() {
 		return backgroundImage;
 	}
 
+	/**
+     * Sets the background image for the chart and sends a
+     * {@link ChartChangeEvent} to all registered listeners.
+     *
+     * @param image  the image ({@code null} permitted).
+     */
 	public void setBackgroundImage2(Image backgroundImage) {
 		this.backgroundImage = backgroundImage;
 	}
 
+	/**
+     * Returns the background image alignment. 
+     *
+     * @return The alignment (never {@code null}).
+     */
 	public RectangleAlignment getBackgroundImageAlignment() {
 		return backgroundImageAlignment;
 	}
 
+	/**
+     * Sets the background alignment and sends a change notification to all
+     * registered listeners.
+     *
+     * @param alignment  the alignment ({@code null} not permitted).
+     */
 	public void setBackgroundImageAlignment2(RectangleAlignment backgroundImageAlignment) {
 		this.backgroundImageAlignment = backgroundImageAlignment;
 	}
 
+	/**
+     * Returns the alpha-transparency for the chart's background image.
+     *
+     * @return The alpha-transparency.
+     */
 	public float getBackgroundImageAlpha() {
 		return backgroundImageAlpha;
 	}
 
+	/**
+     * Sets the alpha-transparency for the chart's background image.
+     * Registered listeners are notified that the chart has been changed.
+     *
+     * @param alpha  the alpha value.
+     */
 	public void setBackgroundImageAlpha2(float backgroundImageAlpha) {
 		this.backgroundImageAlpha = backgroundImageAlpha;
 	}
 
+	/**
+	 * Sets the changeListeners for the JFreeChartProduct.
+	 * 
+	 * @param changeListeners
+	 */
 	public void setChangeListeners(EventListenerList changeListeners) {
 		this.changeListeners = changeListeners;
 	}
 
+	/**
+	 * Returns the notification.
+	 * 
+	 * @return		A notification.
+	 */
 	public boolean getNotify() {
 		return jFreeChartProductProduct.getNotify();
 	}
 
+	/**
+	* Sets a flag that controls whether or not listeners receive  {@link ChartChangeEvent}   notifications.
+	* @param notify    a boolean.
+	*/
 	public void setNotify2(boolean notify) {
 		jFreeChartProductProduct.setNotify2(notify);
 	}
@@ -479,6 +611,11 @@ private JFreeChartProductProduct jFreeChartProductProduct = new JFreeChartProduc
 	}
 
 
+	/**
+     * Clones the object, and takes care of listeners.
+     *
+     * @return A clone.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (JFreeChartProduct) super.clone();
 	}

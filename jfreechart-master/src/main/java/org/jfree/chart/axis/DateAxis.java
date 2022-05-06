@@ -535,6 +535,16 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
         fireChangeEvent();
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.DateAxis.setMinimumDate.
+     * 
+     * Returns the current maximum date for the axis.
+     *
+     * @param date  the date ({@code null} not permitted).
+     *
+     * @return The current maximum date.
+     */
 	private Date maxDate(Date date) {
 		Date maxDate = getMaximumDate();
 		long maxMillis = maxDate.getTime();
@@ -587,6 +597,16 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
         fireChangeEvent();
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.DateAxis.setMaximumDate.
+     * 
+     * Returns the current minimum date for the axis.
+     *
+     * @param maximumDate  the date ({@code null} not permitted).
+     *
+     * @return The current minimum date.
+     */
 	private Date minDate(Date maximumDate) {
 		Date minDate = getMinimumDate();
 		long minMillis = minDate.getTime();
@@ -728,6 +748,18 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
 		return this.timeline.toMillisecond((long) result);
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.DateAxis.java2DToValue.
+     * 
+     * Translates a Java2D coordinate into the corresponding data value.
+     *
+     * @param java2DValue  the coordinate in Java2D space.
+     * @param area  the rectangle (in Java2D space) where the data is to be
+     *              plotted.
+     * @param edge  the axis location.
+     *
+     * @return A data value.
+     */
 	private double result(double java2DValue, Rectangle2D area, RectangleEdge edge) {
 		DateRange range = (DateRange) getRange();
 		double axisMin = this.timeline.toTimelineValue(range.getLowerMillis());
@@ -946,6 +978,16 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
         return null;
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.DateAxis.previousStandardDate.
+     * 
+     * Returns number of milliseconds according with the Tick Marck Position.
+     *
+     * @param milliseconds
+     *
+     * @return Milliseconds.
+     */
 	private int milliseconds(int milliseconds) {
 		if (this.tickMarkPosition == DateTickMarkPosition.START) {
 			milliseconds = 0;
@@ -1710,6 +1752,16 @@ public class DateAxis extends ValueAxis implements Cloneable, Serializable {
 		setRange(adjusted);
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.DateAxis.zoomRange.
+     * Returns the current date range. 
+     *
+     * @param lowerPercent  the new lower bound.
+     * @param upperPercent  the new upper bound.
+     * 
+     * @return The current range.
+     */
 	private Range adjusted(double lowerPercent, double upperPercent) {
 		double start = this.timeline.toTimelineValue((long) getRange().getLowerBound());
 		double end = this.timeline.toTimelineValue((long) getRange().getUpperBound());

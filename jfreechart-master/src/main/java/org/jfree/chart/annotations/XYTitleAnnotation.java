@@ -313,6 +313,15 @@ public class XYTitleAnnotation extends AbstractXYAnnotation
         }
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.XYTitleAnnotation.draw.
+     * Creates and returns block parameters.
+     *
+     * @param info  if supplied, this info object will be populated with
+     *              entity information.
+     *              
+     * @return Block parameters.
+     */
 	private BlockParams p(PlotRenderingInfo info) {
 		BlockParams p = new BlockParams();
 		if (info != null) {

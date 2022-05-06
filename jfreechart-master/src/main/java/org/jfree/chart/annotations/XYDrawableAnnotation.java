@@ -217,6 +217,12 @@ public class XYDrawableAnnotation extends AbstractXYAnnotation
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.XYDrawawbleAnnotation.draw.
+     * Draws a rectangle.
+     *
+     * @param g2  the graphics device.
+     */
 	private void drawable(Graphics2D g2) {
 		Rectangle2D drawArea = new Rectangle2D.Double(0.0, 0.0, this.displayWidth * this.drawScaleFactor,
 				this.displayHeight * this.drawScaleFactor);

@@ -160,6 +160,17 @@ public class XYShapeAnnotation extends AbstractXYAnnotation
 
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.XYShapeAnnotation.draw.
+     * Creates and returns a shape according with the attributes.
+     *
+     * @param plot  the plot.
+     * @param dataArea  the data area.
+     * @param domainAxis  the domain axis.
+     * @param rangeAxis  the range axis.
+     * 
+     * @return A shape.
+     */
 	private Shape s(XYPlot plot, Rectangle2D dataArea, ValueAxis domainAxis, ValueAxis rangeAxis) {
 		PlotOrientation orientation = plot.getOrientation();
 		RectangleEdge domainEdge = Plot.resolveDomainAxisLocation(plot.getDomainAxisLocation(), orientation);

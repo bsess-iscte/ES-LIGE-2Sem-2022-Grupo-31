@@ -6,9 +6,19 @@ import org.jfree.chart.event.ChartProgressListener;
 import org.jfree.chart.event.ChartProgressEvent;
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.JFreeChart.
+ *
+ * @author Bárbara
+ */
 public class JFreeChartProduct2 implements Serializable, Cloneable {
 	private transient EventListenerList progressListeners;
 
+	/**
+	 * Sets the list of progress listeners.
+	 * 
+	 * @param progressListeners		list of progress listeners.
+	 */
 	public void setProgressListeners(EventListenerList progressListeners) {
 		this.progressListeners = progressListeners;
 	}
@@ -44,6 +54,14 @@ public class JFreeChartProduct2 implements Serializable, Cloneable {
 		}
 	}
 
+	/**
+     * Clones the object, and takes care of listeners.
+     * Note: caller shall register its own listeners on cloned graph.
+     *
+     * @return A clone.
+     *
+     * @throws CloneNotSupportedException if the chart is not cloneable.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (JFreeChartProduct2) super.clone();
 	}

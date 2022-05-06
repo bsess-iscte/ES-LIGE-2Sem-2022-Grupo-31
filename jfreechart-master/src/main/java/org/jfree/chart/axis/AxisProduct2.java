@@ -9,9 +9,19 @@ import java.util.Arrays;
 import org.jfree.chart.event.AxisChangeEvent;
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.axis.Axis.
+ *
+ * @author Bárbara
+ */
 public class AxisProduct2 implements Serializable, Cloneable {
 	private transient EventListenerList listenerList;
 
+	/**
+	 * Registers a list of listeners.
+	 * 
+	 * @param listenerList	list of listeners.
+	 */
 	public void setListenerList(EventListenerList listenerList) {
 		this.listenerList = listenerList;
 	}
@@ -57,6 +67,11 @@ public class AxisProduct2 implements Serializable, Cloneable {
 		}
 	}
 
+	/**
+     * Clones the object, and takes care of listeners.
+     *
+     * @return A clone.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (AxisProduct2) super.clone();
 	}

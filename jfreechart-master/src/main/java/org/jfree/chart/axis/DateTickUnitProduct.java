@@ -6,22 +6,47 @@ import java.util.TimeZone;
 import java.util.Calendar;
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.axis.DateTickUnit.
+ *
+ * @author Bárbara
+ */
 public class DateTickUnitProduct implements Serializable {
 	private DateTickUnitType rollUnitType;
 	private int rollCount;
 
+	/**
+     * Returns the roll unit type.
+     *
+     * @return The roll unit type (never {@code null}).
+     */
 	public DateTickUnitType getRollUnitType() {
 		return rollUnitType;
 	}
 
+	/**
+	 * Sets the roll unit type.
+	 * 
+	 * @param rollUnitType  the roll unit type.
+	 */
 	public void setRollUnitType(DateTickUnitType rollUnitType) {
 		this.rollUnitType = rollUnitType;
 	}
 
+	/**
+	 * Returns the number of rolls.
+	 * 
+	 * @return  The number of rolls.
+	 */
 	public int getRollCount() {
 		return rollCount;
 	}
 
+	/**
+	 * Sets the number of rolls.
+	 * 
+	 * @param rollCount		number of rolls.
+	 */
 	public void setRollCount(int rollCount) {
 		this.rollCount = rollCount;
 	}

@@ -132,6 +132,16 @@ public class TickUnits implements TickUnitSource, Cloneable, Serializable {
                 this.tickUnits.size() - 1));
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.TickUnits.getLargerTickUnit.
+     * 
+     * Returns the index according to the binary search.
+     *
+     * @param unit   the unit.
+     *
+     * @return An index.
+     */
 	private int index(TickUnit unit) {
 		int index = Collections.binarySearch(this.tickUnits, unit);
 		if (index >= 0) {

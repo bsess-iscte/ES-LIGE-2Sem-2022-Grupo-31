@@ -576,6 +576,16 @@ public class PeriodAxis extends ValueAxis
         return space;
     }
 
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.axis.PeriodAxis.reserveSpace.
+     * 
+     * Returns the dimension of the tick label bands.
+     *
+     * @param g2  the graphics device.
+     *
+     * @return The dimension of the tick label bands.
+     */
 	private double tickLabelBandsDimension(Graphics2D g2) {
 		double tickLabelBandsDimension = 0.0;
 		for (PeriodAxisLabelInfo info : this.labelInfo) {

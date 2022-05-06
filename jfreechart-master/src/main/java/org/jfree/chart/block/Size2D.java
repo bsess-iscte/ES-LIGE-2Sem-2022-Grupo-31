@@ -185,6 +185,17 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
                 this.height);
     	}
 
+	/**
+	 * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.block.Size2D.createAlignedRectangle2D.
+	 * 
+	 * Returns the value to be used as the Y coordinate of the upper-left corner of a rectangle.
+	 * 
+	 * @param frame		the frame to align to.
+	 * @param hAlign	the horizontal alignment.
+	 * @param vAlign	the vertical alignment.
+	 * 
+	 * @return  The Y coordinate of the upper-left corner.
+	 */
 	private double y_creation(Rectangle2D frame, HorizontalAlignment hAlign,
 			VerticalAlignment vAlign) throws IllegalStateException {
 		double y = Double.NaN;
@@ -204,6 +215,16 @@ public class Size2D implements Cloneable, PublicCloneable, Serializable {
 		return y;
 	}
 
+	/**
+	 * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.block.Size2D.createAlignedRectangle2D.
+	 * 
+	 * Returns the value to be used as the X coordinate of the upper-left corner of a rectangle.
+	 * 
+	 * @param frame		the frame to align to.
+	 * @param hAlign	the horizontal alignment.
+	 * 
+	 * @return  The X coordinate of the upper-left corner.
+	 */
 	private double x_creation(Rectangle2D frame, HorizontalAlignment hAlign)
 			throws IllegalStateException {
 		double x = Double.NaN;

@@ -6,13 +6,28 @@ import org.jfree.chart.internal.Args;
 import org.jfree.chart.api.PublicCloneable;
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.StandardChartTheme.
+ *
+ * @author Bárbara
+ */
 public class StandardChartThemeProduct implements Serializable, Cloneable {
 	private DrawingSupplier drawingSupplier;
 
+	/**
+     * Returns a clone of the drawing supplier for this theme.
+     *
+     * @return A clone of the drawing supplier.
+     */
 	public DrawingSupplier getDrawingSupplier2() {
 		return drawingSupplier;
 	}
 
+	/**
+     * Sets the drawing supplier for this theme.
+     *
+     * @param supplier  the supplier ({@code null} not permitted)
+     */
 	public void setDrawingSupplier2(DrawingSupplier drawingSupplier) {
 		this.drawingSupplier = drawingSupplier;
 	}
@@ -44,6 +59,12 @@ public class StandardChartThemeProduct implements Serializable, Cloneable {
 		return result;
 	}
 
+
+	/**
+     * Clones the object.
+     * 
+     * @return A clone.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (StandardChartThemeProduct) super.clone();
 	}

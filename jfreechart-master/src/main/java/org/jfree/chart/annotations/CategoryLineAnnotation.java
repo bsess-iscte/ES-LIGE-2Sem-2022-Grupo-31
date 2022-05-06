@@ -319,7 +319,18 @@ public class CategoryLineAnnotation extends AbstractAnnotation
         g2.setStroke(this.stroke);
         g2.drawLine((int) lineX1, (int) lineY1, (int) lineX2, (int) lineY2);
     }
-
+    
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.annotations.CategoryLineAnnotation.draw.
+     * Gets coordinates.
+     *
+     * @param plot  the plot.
+     * @param dataArea  the data area.
+     * @param domainAxis  the domain axis.
+     * @param rangeAxis  the range axis.
+     * 
+     * @return Coordinate of the axis.
+     */
 	private double lineX1(CategoryPlot plot, Rectangle2D dataArea, CategoryAxis domainAxis, ValueAxis rangeAxis) {
 		CategoryDataset dataset = plot.getDataset();
 		int catIndex1 = dataset.getColumnIndex(this.category1);

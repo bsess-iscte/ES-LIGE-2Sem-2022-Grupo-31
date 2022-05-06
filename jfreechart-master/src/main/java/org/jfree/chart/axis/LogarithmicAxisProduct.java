@@ -3,13 +3,28 @@ package org.jfree.chart.axis;
 
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.axis.LogarithmicAxis.
+ *
+ * @author Bárbara
+ */
 public class LogarithmicAxisProduct implements Serializable, Cloneable {
 	private boolean smallLogFlag = false;
 
+	/**
+	 * Returns if there is a small log flag.
+	 * 
+	 * @return	Is log flag small?
+	 */
 	public boolean getSmallLogFlag() {
 		return smallLogFlag;
 	}
 
+	/**
+	 * Sets if the log flag is small.
+	 * 
+	 * @param smallLogFlag		value of the small log flag.
+	 */
 	public void setSmallLogFlag(boolean smallLogFlag) {
 		this.smallLogFlag = smallLogFlag;
 	}
@@ -72,6 +87,11 @@ public class LogarithmicAxisProduct implements Serializable, Cloneable {
 		return negFlag ? (-res) : res;
 	}
 
+	/**
+     * Clones the object.
+     *
+     * @return A clone.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (LogarithmicAxisProduct) super.clone();
 	}

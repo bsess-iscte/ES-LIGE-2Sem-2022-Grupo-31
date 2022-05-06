@@ -1011,6 +1011,18 @@ public class JFreeChart implements Drawable, TitleChangeListener,
                 ChartProgressEventType.DRAWING_FINISHED, 100));
     }
 
+    /**
+     * Método criado a partir da refabricação de um Long Method no método org.jfree.chart.JFreeChart.draw.
+     * Draws on the plot.
+     * <P>
+     *
+     * @param g2  the graphics device.
+     * @param anchor  the anchor point (in Java2D space) for the chart.
+     * @param info  records info about the drawing (null means collect no info).
+     * @param nonTitleArea
+     * 
+     * @return Info for plot rendering.
+     */
 	private PlotRenderingInfo plotInfo_creation(Graphics2D g2, Point2D anchor, ChartRenderingInfo info,
 			Rectangle2D nonTitleArea) {
 		Rectangle2D plotArea = nonTitleArea;

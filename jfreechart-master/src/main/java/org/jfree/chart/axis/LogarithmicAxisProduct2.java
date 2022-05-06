@@ -5,14 +5,30 @@ import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.io.Serializable;
 
+/**
+ * Classe criada a partir da refabricação de God Class na classe org.jfree.chart.axis.LogarithmicAxis.
+ *
+ * @author Bárbara
+ */
 public class LogarithmicAxisProduct2 implements Serializable, Cloneable {
 	private final NumberFormat numberFormatterObj = NumberFormat.getInstance();
 	private boolean expTickLabelsFlag = false;
 
+	/**
+	 * Returns the number format.
+	 * 
+	 * @return		The number format.
+	 */
 	public NumberFormat getNumberFormatterObj() {
 		return numberFormatterObj;
 	}
 
+	/**
+     * Returns the 'expTickLabelsFlag' flag.
+     *
+     * @return {@code true} for "1e#"-style tick labels,
+     *         {@code false} for log10 or regular numeric tick labels.
+     */
 	public boolean getExpTickLabelsFlag() {
 		return expTickLabelsFlag;
 	}
@@ -48,6 +64,11 @@ public class LogarithmicAxisProduct2 implements Serializable, Cloneable {
 		return logarithmicAxis.getTickUnit().valueToString(val);
 	}
 
+	/**
+     * Clones the object.
+     *
+     * @return A clone.
+     */
 	public Object clone() throws CloneNotSupportedException {
 		return (LogarithmicAxisProduct2) super.clone();
 	}
